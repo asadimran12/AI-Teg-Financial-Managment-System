@@ -19,7 +19,7 @@ const Courses: React.FC = () => {
     description: "",
   });
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_BACKEND;
 
   const handleAdd = async () => {
     if (!form.name || !form.duration) return;
