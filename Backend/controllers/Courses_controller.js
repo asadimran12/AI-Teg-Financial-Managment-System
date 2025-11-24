@@ -12,6 +12,7 @@ const Addcourse = async (req, res) => {
     });
     res.status(201).json(course);
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ error: "Failed to create course" });
   }
 };
