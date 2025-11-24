@@ -140,7 +140,7 @@ const Courses: React.FC = () => {
                       {course.name}
                     </td>
                     <td className="py-3 px-6 font-semibold text-[#03C0C8]">
-                      ${course.fee}
+                      Rs.{course.fee}
                     </td>
                     <td className="py-3 px-6">{course.duration}</td>
                     <td className="py-3 px-6">{course.description}</td>
