@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
 
@@ -19,28 +19,44 @@ const Courses: React.FC = () => {
     description: "",
   });
 
-  const apiUrl = import.meta.env.VITE_BACKEND;
+  const apiUrl = import.meta.env.VITE_BACKEND; // make sure this is set in your .env file
 
+  // Fetch all courses on mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/courses/`);
+        setCourses(response.data); // set courses from backend
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, [apiUrl]);
+
+  // Add a new course
   const handleAdd = async () => {
     if (!form.name || !form.duration) return;
 
-    const newCourse: Course = { id: Date.now(), ...form };
-console.log("NEw Course",newCourse)
     try {
-      const response = await axios.post(`${apiUrl}api/courses`, newCourse);
-      console.log(response)
-
+      const response = await axios.post(`${apiUrl}/api/courses/`, form);
       const savedCourse = response.data;
       setCourses([...courses, savedCourse]);
-
       setForm({ name: "", fee: 0, duration: "", description: "" });
     } catch (error) {
       console.error("Error adding course:", error);
     }
   };
 
-  const handleDelete = (id: number) => {
-    setCourses(courses.filter((course) => course.id !== id));
+  // Delete a course
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`${apiUrl}/api/courses/${id}`);
+      setCourses(courses.filter((course) => course.id !== id));
+    } catch (error) {
+      console.error("Error deleting course:", error);
+    }
   };
 
   return (
@@ -88,7 +104,7 @@ console.log("NEw Course",newCourse)
               }
             />
             <button
-              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow"
+              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
               onClick={handleAdd}
             >
               Add Course
