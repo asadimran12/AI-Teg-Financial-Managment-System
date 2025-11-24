@@ -25,9 +25,10 @@ const Courses: React.FC = () => {
     if (!form.name || !form.duration) return;
 
     const newCourse: Course = { id: Date.now(), ...form };
-
+console.log("NEw Course",newCourse)
     try {
       const response = await axios.post(`${apiUrl}api/courses`, newCourse);
+      console.log(response)
 
       const savedCourse = response.data;
       setCourses([...courses, savedCourse]);
