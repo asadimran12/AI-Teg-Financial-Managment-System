@@ -2,15 +2,14 @@
 const express = require('express');
 const sequelize = require('./db'); // Sequelize instance
 const courseRoutes = require("./routers/Courses_router");
-const cors = require('cors'); // import cors
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 
-// Enable CORS for your React frontend
 app.use(cors({
-  origin: process.env.REACT_URL, // frontend URL from .env
+  origin: process.env.REACT_URL, 
   credentials: true,
 }));
 
