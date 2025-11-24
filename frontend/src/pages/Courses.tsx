@@ -121,7 +121,7 @@ const Courses: React.FC = () => {
                 <th className="py-3 px-6 text-left">Course Name</th>
                 <th className="py-3 px-6 text-left">Fee</th>
                 <th className="py-3 px-6 text-left">Duration</th>
-                <th className="py-3 px-6 text-left">Description</th>
+                <th className="py-3 px-6 text-left">Description (in Months)</th>
                 <th className="py-3 px-6 text-left">Actions</th>
               </tr>
             </thead>
