@@ -19,14 +19,15 @@ const Courses: React.FC = () => {
     description: "",
   });
 
-  const apiUrl = import.meta.env.VITE_BACKEND; // make sure this is set in your .env file
+  const apiUrl = import.meta.env.VITE_BACKEND; 
+  console.log(courses)
 
   // Fetch all courses on mount
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/courses/`);
-        setCourses(response.data); // set courses from backend
+        setCourses(response.data); 
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
