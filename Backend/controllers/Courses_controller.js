@@ -5,7 +5,6 @@ const Addcourse = async (req, res) => {
     const { name, duration, fee, description } = req.body;
     const course = await Course.create({
       name,
-      category,
       duration,
       fee,
       description,
@@ -22,6 +21,7 @@ const DeleteCoourse = async (req, res) => {
     await Course.destroy({ where: id });
     return res.json({ message: "Course deleted successfully" });
   } catch (error) {
+        console.log(error)
     return res.status(500).json({ error: "Failed to load course" });
   }
 };
@@ -31,6 +31,7 @@ const GetCourse = async (req, res) => {
     const courses = await Course.findAll();
     return res.status(201).json(courses);
   } catch (error) {
+        console.log(error)
     return res.status(500).json({ error: "Failed to load course" });
   }
 };
