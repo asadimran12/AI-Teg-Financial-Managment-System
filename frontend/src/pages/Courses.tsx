@@ -24,7 +24,6 @@ const Courses: React.FC = () => {
   const handleAdd = async () => {
     if (!form.name || !form.duration) return;
 
-    // Create a new course object locally
     const newCourse: Course = { id: Date.now(), ...form };
 
     try {
