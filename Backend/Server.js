@@ -2,10 +2,17 @@
 const express = require('express');
 const sequelize = require('./db'); // Sequelize instance
 const courseRoutes = require("./routers/Courses_router");
+const cors = require('cors'); // import cors
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+
+// Enable CORS for your React frontend
+app.use(cors({
+  origin: process.env.REACT_URL, // frontend URL from .env
+  credentials: true,
+}));
 
 // Test DB connection
 (async () => {
@@ -17,16 +24,18 @@ app.use(express.json());
   }
 })();
 
+// Sync models
 (async () => {
   try {
-    await sequelize.sync({ alter: true }); // alter:true updates tables if models change
+    await sequelize.sync({ alter: true }); // updates tables if models change
     console.log('✅ All models synced with database');
   } catch (err) {
     console.error('❌ Error syncing models:', err);
   }
 })();
 
-app.use("/api/courses", courseRoutes)
+// Routes
+app.use("/api/courses", courseRoutes);
 
 // Simple route
 app.get('/', (req, res) => {
