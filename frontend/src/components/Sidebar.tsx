@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className="w-64 flex flex-col p-6 min-h-screen"
+       className="w-64 flex flex-col p-6 overflow-y-auto" 
       style={{ backgroundColor: "#04337B", color: "#ffffff" }}
     >
       <div className="mb-10">

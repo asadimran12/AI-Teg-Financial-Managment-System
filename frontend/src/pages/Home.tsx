@@ -1,32 +1,264 @@
+import React, { useEffect, useState } from "react";
+import { Bar, Pie, Line } from "react-chartjs-2";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-const Home = () => {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// Updated Asset interface
+interface Investment {
+  id: number;
+  Invested_by: string;
+  amount: number;
+  Category: string;
+  Quantity: number;
+  date: string;
+}
+interface Asset {
+  id: number;
+  name: string;
+  category: string;
+  purchase_date: string;
+  value: number;
+  quantity: number;
+  location: string;
+}
+interface Expense {
+  id: number;
+  title: string;
+  amount: number;
+  date: string;
+}
+interface Teacher {
+  id: number;
+  name: string;
+  courses: string[];
+}
+interface Student {
+  id: number;
+  name: string;
+  courses: string[];
+}
+
+const Dashboard: React.FC = () => {
+  const apiUrl = import.meta.env.VITE_BACKEND;
+
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [invRes, assetRes, expRes, teacherRes, studentRes] =
+          await Promise.all([
+            axios.get(`${apiUrl}/api/investment`),
+            axios.get(`${apiUrl}/api/assets`),
+            axios.get(`${apiUrl}/api/daily-expenses`),
+            axios.get(`${apiUrl}/api/teachers`),
+            axios.get(`${apiUrl}/api/students`),
+          ]);
+
+        setInvestments(invRes.data);
+        setAssets(assetRes.data);
+        setExpenses(expRes.data);
+        setTeachers(teacherRes.data);
+        setStudents(studentRes.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Aggregate data for charts
+  const investmentByCategory = investments.reduce<Record<string, number>>(
+    (acc, cur) => {
+      acc[cur.Category] = (acc[cur.Category] || 0) + cur.amount;
+      return acc;
+    },
+    {}
+  );
+
+  const assetByMonth = assets.reduce<Record<string, number>>((acc, cur) => {
+    const month = new Date(cur.purchase_date).toLocaleString("default", {
+      month: "short",
+      year: "numeric",
+    });
+    acc[month] = (acc[month] || 0) + cur.value; // corrected field from 'amount' to 'value'
+    return acc;
+  }, {});
+
+  const expensesByMonth = expenses.reduce<Record<string, number>>(
+    (acc, cur) => {
+      const month = new Date(cur.date).toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+      acc[month] = (acc[month] || 0) + cur.amount;
+      return acc;
+    },
+    {}
+  );
+
   return (
     <div className="flex min-h-screen bg-gray-100">
-
-      {/* Sidebar on the left */}
       <Sidebar />
 
-      {/* Dashboard Content */}
-      <div className="flex-1 flex justify-center items-center px-4">
-        <div className="bg-white p-10 rounded-2xl shadow-xl text-center w-full max-w-lg">
-          
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Welcome to
-          </h1>
+      <main className="flex-1 p-6 overflow-auto">
+        <h2 className="text-3xl font-bold text-[#04337B] mb-6 text-center">
+          Welcome to AI Teg Financial Management System
+        </h2>
 
-          <h2 className="text-2xl font-semibold text-indigo-600 mb-4">
-            AI Teg Academy
-          </h2>
-
-          <p className="text-lg text-gray-600">
-            Final Management System Dashboard
-          </p>
-
+        {/* Module Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
+          {[
+            {
+              key: "investments",
+              label: "Investments",
+              count: investments.length,
+            },
+            { key: "assets", label: "Assets", count: assets.length },
+            { key: "expenses", label: "Expenses", count: expenses.length },
+            { key: "students", label: "Students", count: students.length },
+            { key: "teachers", label: "Teachers", count: teachers.length },
+          ].map((module) => (
+            <div
+              key={module.key}
+              className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:bg-[#03C0C8] hover:text-white transition text-center"
+              onClick={() => setSelectedModule(module.key)}
+            >
+              <h3 className="text-xl font-semibold">{module.label}</h3>
+              <p className="text-2xl font-bold mt-2">{module.count}</p>
+            </div>
+          ))}
         </div>
-      </div>
+
+        {/* Selected Module Charts */}
+        <div className="flex flex-wrap justify-center gap-6 mt-6">
+          {selectedModule === "investments" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64">
+              <h3 className="text-lg font-semibold mb-2 text-center">
+                Investment by Category
+              </h3>
+              <Pie
+                data={{
+                  labels: Object.keys(investmentByCategory),
+                  datasets: [
+                    {
+                      label: "Amount",
+                      data: Object.values(investmentByCategory),
+                      backgroundColor: [
+                        "#03C0C8",
+                        "#04337B",
+                        "#FF6384",
+                        "#FFCE56",
+                        "#36A2EB",
+                      ],
+                    },
+                  ],
+                }}
+                options={{
+                  plugins: {
+                    legend: {
+                      position: "bottom",
+                      labels: { font: { size: 12 } },
+                    },
+                  },
+                  maintainAspectRatio: false,
+                }}
+              />
+            </div>
+          )}
+
+          {selectedModule === "assets" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64">
+              <h3 className="text-lg font-semibold mb-2 text-center">
+                Assets Over Time
+              </h3>
+              <Bar
+                data={{
+                  labels: Object.keys(assetByMonth),
+                  datasets: [
+                    {
+                      label: "Assets Value",
+                      data: Object.values(assetByMonth),
+                      backgroundColor: "#03C0C8",
+                    },
+                  ],
+                }}
+                options={{ maintainAspectRatio: false }}
+              />
+            </div>
+          )}
+
+          {selectedModule === "expenses" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64">
+              <h3 className="text-lg font-semibold mb-2 text-center">
+                Expenses Over Time
+              </h3>
+              <Bar
+                data={{
+                  labels: Object.keys(expensesByMonth),
+                  datasets: [
+                    {
+                      label: "Expenses Amount",
+                      data: Object.values(expensesByMonth),
+                      backgroundColor: "#FF6384",
+                    },
+                  ],
+                }}
+                options={{ maintainAspectRatio: false }}
+              />
+            </div>
+          )}
+
+          {selectedModule === "students" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64 flex flex-col justify-center items-center">
+              <h3 className="text-lg font-semibold mb-2">Total Students</h3>
+              <p className="text-4xl font-bold text-[#03C0C8]">
+                {students.length}
+              </p>
+            </div>
+          )}
+
+          {selectedModule === "teachers" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64 flex flex-col justify-center items-center">
+              <h3 className="text-lg font-semibold mb-2">Total Teachers</h3>
+              <p className="text-4xl font-bold text-[#03C0C8]">
+                {teachers.length}
+              </p>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
 
-export default Home;
+export default Dashboard;
