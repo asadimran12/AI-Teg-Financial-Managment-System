@@ -35,4 +35,20 @@ const GetCourse = async (req, res) => {
     return res.status(500).json({ error: "Failed to load course" });
   }
 };
-module.exports = { Addcourse, DeleteCoourse, GetCourse };
+
+const GetSpecificCourse = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const course = await Course.findByPk(id);
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    return res.status(200).json(course);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Failed to load course" });
+  }
+};
+module.exports = { Addcourse, DeleteCoourse, GetCourse, GetSpecificCourse };

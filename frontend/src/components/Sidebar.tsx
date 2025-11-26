@@ -9,6 +9,9 @@ const Sidebar: React.FC = () => {
     { path: "/student", text: "Students" },
     { path: "/teachers", text: "Teachers" },
     { path: "/courses", text: "Courses" },
+    { path: "/investment", text: "Investments" },
+    { path: "/assest", text: "Assests" },
+    { path: "/dailyexpense", text: "Daily Expenses" },
   ];
 
   return (

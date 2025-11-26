@@ -20,7 +20,6 @@ const Courses: React.FC = () => {
   });
 
   const apiUrl = import.meta.env.VITE_BACKEND; 
-  console.log(courses)
 
   // Fetch all courses on mount
   useEffect(() => {

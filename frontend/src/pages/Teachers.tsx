@@ -1,53 +1,121 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 
 interface Teacher {
   id: number;
   name: string;
-  course: string;
-  phone: string;
+  courses: string[];
+  Phone_number: string;
   email: string;
   pay: number;
-  status: "Paid" | "Unpaid";
+  pay_status: "paid" | "unpaid";
+}
+
+interface Course {
+  id: number;
+  name: string;
+  fee: number;
 }
 
 const Teachers: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [form, setForm] = useState({
     name: "",
-    course: "",
-    phone: "",
+    courses: [] as string[],
+    Phone_number: "",
     email: "",
     pay: 0,
+    pay_status: "unpaid" as "paid" | "unpaid",
   });
+  const [editingId, setEditingId] = useState<number | null>(null);
 
-  const handleAdd = () => {
-    if (!form.name || !form.course) return; // simple validation
-    const newTeacher: Teacher = {
-      id: Date.now(),
-      ...form,
-      status: form.pay > 0 ? "Paid" : "Unpaid",
+  const apiUrl = import.meta.env.VITE_BACKEND;
+
+  // Fetch teachers & courses on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [teachersRes, coursesRes] = await Promise.all([
+          axios.get(`${apiUrl}/api/teachers`),
+          axios.get(`${apiUrl}/api/courses`),
+        ]);
+        setTeachers(teachersRes.data);
+        setCourses(coursesRes.data);
+      } catch (err) {
+        console.error(err);
+      }
     };
-    setTeachers([...teachers, newTeacher]);
-    setForm({ name: "", course: "", phone: "", email: "", pay: 0 });
+    fetchData();
+  }, [apiUrl]);
+
+  // Add or Update teacher
+  const handleSubmit = async () => {
+    if (!form.name || form.courses.length === 0) return;
+
+    try {
+      if (editingId) {
+        const res = await axios.put(`${apiUrl}/api/teachers/${editingId}`, form);
+        setTeachers(teachers.map(t => (t.id === editingId ? res.data : t)));
+        setEditingId(null);
+      } else {
+        const res = await axios.post(`${apiUrl}/api/teachers`, form);
+        setTeachers([...teachers, res.data]);
+      }
+
+      setForm({ name: "", courses: [], Phone_number: "", email: "", pay: 0, pay_status: "unpaid" });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setTeachers(teachers.filter(teacher => teacher.id !== id));
+  // Delete teacher
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`${apiUrl}/api/teachers/${id}`);
+      setTeachers(teachers.filter(t => t.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Edit teacher
+  const handleEdit = (teacher: Teacher) => {
+    setForm({
+      name: teacher.name,
+      courses: teacher.courses,
+      Phone_number: teacher.Phone_number,
+      email: teacher.email,
+      pay: teacher.pay,
+      pay_status: teacher.pay_status,
+    });
+    setEditingId(teacher.id);
+  };
+
+  // Handle course select/remove
+  const handleCourseSelect = (courseName: string) => {
+    if (!form.courses.includes(courseName)) {
+      setForm({ ...form, courses: [...form.courses, courseName] });
+    }
+  };
+
+  const handleCourseRemove = (courseName: string) => {
+    setForm({ ...form, courses: form.courses.filter(c => c !== courseName) });
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">Teachers Dashboard</h2>
 
-        {/* Add Teacher Form */}
+        {/* Add / Edit Teacher Form */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-[#04337B] mb-4">Add New Teacher</h3>
+          <h3 className="text-xl font-semibold text-[#04337B] mb-4">
+            {editingId ? "Update Teacher" : "Add New Teacher"}
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
@@ -57,15 +125,9 @@ const Teachers: React.FC = () => {
             />
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Course"
-              value={form.course}
-              onChange={e => setForm({ ...form, course: e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
               placeholder="Phone"
-              value={form.phone}
-              onChange={e => setForm({ ...form, phone: e.target.value })}
+              value={form.Phone_number}
+              onChange={e => setForm({ ...form, Phone_number: e.target.value })}
             />
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
@@ -80,22 +142,58 @@ const Teachers: React.FC = () => {
               value={form.pay}
               onChange={e => setForm({ ...form, pay: +e.target.value })}
             />
+            <select
+              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+              value={form.pay_status}
+              onChange={e => setForm({ ...form, pay_status: e.target.value as "paid" | "unpaid" })}
+            >
+              <option value="unpaid">Unpaid</option>
+              <option value="paid">Paid</option>
+            </select>
+
+            {/* Courses Multi-select */}
+            <div className="border rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#03C0C8] shadow-sm">
+              <div className="flex flex-wrap gap-1 mb-2">
+                {form.courses.map(c => (
+                  <span
+                    key={c}
+                    className="bg-[#03C0C8] text-white px-2 py-1 rounded-full flex items-center gap-1"
+                  >
+                    {c}
+                    <button type="button" onClick={() => handleCourseRemove(c)} className="text-white font-bold">×</button>
+                  </span>
+                ))}
+              </div>
+              <select
+                className="w-full border-none focus:ring-0 outline-none"
+                value=""
+                onChange={e => handleCourseSelect(e.target.value)}
+              >
+                <option value="">Select course</option>
+                {courses
+                  .filter(c => !form.courses.includes(c.name))
+                  .map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+              </select>
+            </div>
+
             <button
               className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-              onClick={handleAdd}
+              onClick={handleSubmit}
             >
-              Add Teacher
+              {editingId ? "Update Teacher" : "Add Teacher"}
             </button>
           </div>
         </div>
 
-        {/* Teachers List Table */}
+        {/* Teachers Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-[#03C0C8] text-white">
               <tr>
                 <th className="py-3 px-6 text-left">Name</th>
-                <th className="py-3 px-6 text-left">Course</th>
+                <th className="py-3 px-6 text-left">Courses</th>
                 <th className="py-3 px-6 text-left">Phone</th>
                 <th className="py-3 px-6 text-left">Email</th>
                 <th className="py-3 px-6 text-left">Pay</th>
@@ -105,34 +203,25 @@ const Teachers: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {teachers.length > 0 ? (
-                teachers.map((teacher, idx) => (
-                  <tr
-                    key={teacher.id}
-                    className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 transition" : "hover:bg-gray-100 transition"}
-                  >
-                    <td className="py-3 px-6 font-medium text-[#04337B]">{teacher.name}</td>
-                    <td className="py-3 px-6">{teacher.course}</td>
-                    <td className="py-3 px-6">{teacher.phone}</td>
-                    <td className="py-3 px-6">{teacher.email}</td>
-                    <td className="py-3 px-6 font-semibold text-[#03C0C8]">{teacher.pay}</td>
-                    <td className={`py-3 px-6 font-semibold ${teacher.status === "Paid" ? "text-green-600" : "text-red-600"}`}>
-                      {teacher.status}
+                teachers.map((t, idx) => (
+                  <tr key={t.id} className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 transition" : "hover:bg-gray-100 transition"}>
+                    <td className="py-3 px-6 font-medium text-[#04337B]">{t.name}</td>
+                    <td className="py-3 px-6">{t.courses.join(", ")}</td>
+                    <td className="py-3 px-6">{t.Phone_number}</td>
+                    <td className="py-3 px-6">{t.email}</td>
+                    <td className="py-3 px-6 font-semibold text-[#03C0C8]">{t.pay}</td>
+                    <td className={`py-3 px-6 font-semibold ${t.pay_status === "paid" ? "text-green-600" : "text-red-600"}`}>
+                      {t.pay_status.toUpperCase()}
                     </td>
-                    <td className="py-3 px-6">
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
-                        onClick={() => handleDelete(teacher.id)}
-                      >
-                        Delete
-                      </button>
+                    <td className="py-3 px-6 flex gap-2">
+                      <button className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow" onClick={() => handleEdit(t)}>Edit</button>
+                      <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow" onClick={() => handleDelete(t.id)}>Delete</button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500">
-                    No teachers added yet.
-                  </td>
+                  <td colSpan={7} className="text-center py-4 text-gray-500">No teachers added yet.</td>
                 </tr>
               )}
             </tbody>
