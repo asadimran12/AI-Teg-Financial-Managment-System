@@ -96,7 +96,6 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, [apiUrl]);
 
-  // Aggregate data for charts
   const investmentByCategory = investments.reduce<Record<string, number>>(
     (acc, cur) => {
       acc[cur.Category] = (acc[cur.Category] || 0) + cur.amount;
