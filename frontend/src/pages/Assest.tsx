@@ -37,7 +37,7 @@ export const Assets: React.FC = () => {
       }
     };
     fetchAssets();
-  }, []);
+  }, [apiUrl]);
 
   // Add or Update asset
   const handleSubmit = async () => {

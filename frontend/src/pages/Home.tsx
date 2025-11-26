@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Bar, Pie, Line } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
 import {
@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [apiUrl]);
 
   // Aggregate data for charts
   const investmentByCategory = investments.reduce<Record<string, number>>(
