@@ -14,6 +14,7 @@ const Sidebar: React.FC = () => {
     { path: "/investment", text: "Investments" },
     { path: "/assest", text: "Assests" },
     { path: "/dailyexpense", text: "Daily Expenses" },
+    { path: "/teacherspay", text: "Teachers Pay" },
   ];
 
   return (

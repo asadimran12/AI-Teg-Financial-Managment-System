@@ -9,7 +9,7 @@ interface Teacher {
   Phone_number: string;
   email: string;
   pay: number;
-  pay_status: "paid" | "unpaid";
+  pay_status: "paid";
 }
 
 interface Course {
@@ -27,7 +27,7 @@ const Teachers: React.FC = () => {
     Phone_number: "",
     email: "",
     pay: 0,
-    pay_status: "unpaid" as "paid" | "unpaid",
+    pay_status: "paid",
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -142,14 +142,6 @@ const Teachers: React.FC = () => {
               value={form.pay}
               onChange={e => setForm({ ...form, pay: +e.target.value })}
             />
-            <select
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              value={form.pay_status}
-              onChange={e => setForm({ ...form, pay_status: e.target.value as "paid" | "unpaid" })}
-            >
-              <option value="unpaid">Unpaid</option>
-              <option value="paid">Paid</option>
-            </select>
 
             {/* Courses Multi-select */}
             <div className="border rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#03C0C8] shadow-sm">

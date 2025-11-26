@@ -27,7 +27,7 @@ ChartJS.register(
   Legend
 );
 
-// Updated Asset interface
+// Interfaces
 interface Investment {
   id: number;
   Invested_by: string;
@@ -61,6 +61,13 @@ interface Student {
   name: string;
   courses: string[];
 }
+interface TeacherPay {
+  id: number;
+  name: string;
+  pay: number;
+  status: string;
+  createdAt: string;
+}
 
 const Dashboard: React.FC = () => {
   const apiUrl = import.meta.env.VITE_BACKEND;
@@ -70,18 +77,20 @@ const Dashboard: React.FC = () => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
+  const [teacherPays, setTeacherPays] = useState<TeacherPay[]>([]);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [invRes, assetRes, expRes, teacherRes, studentRes] =
+        const [invRes, assetRes, expRes, teacherRes, studentRes, payRes] =
           await Promise.all([
             axios.get(`${apiUrl}/api/investment`),
             axios.get(`${apiUrl}/api/assets`),
             axios.get(`${apiUrl}/api/daily-expenses`),
             axios.get(`${apiUrl}/api/teachers`),
             axios.get(`${apiUrl}/api/students`),
+            axios.get(`${apiUrl}/api/teacherpay/all`),
           ]);
 
         setInvestments(invRes.data);
@@ -89,6 +98,7 @@ const Dashboard: React.FC = () => {
         setExpenses(expRes.data);
         setTeachers(teacherRes.data);
         setStudents(studentRes.data);
+        setTeacherPays(payRes.data.data || payRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -96,6 +106,7 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, [apiUrl]);
 
+  // Analytics calculations
   const investmentByCategory = investments.reduce<Record<string, number>>(
     (acc, cur) => {
       acc[cur.Category] = (acc[cur.Category] || 0) + cur.amount;
@@ -109,7 +120,7 @@ const Dashboard: React.FC = () => {
       month: "short",
       year: "numeric",
     });
-    acc[month] = (acc[month] || 0) + cur.value; // corrected field from 'amount' to 'value'
+    acc[month] = (acc[month] || 0) + cur.value;
     return acc;
   }, {});
 
@@ -125,6 +136,18 @@ const Dashboard: React.FC = () => {
     {}
   );
 
+  const teacherPayByMonth = teacherPays.reduce<Record<string, number>>(
+    (acc, cur) => {
+      const month = new Date(cur.createdAt).toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+      acc[month] = (acc[month] || 0) + cur.pay;
+      return acc;
+    },
+    {}
+  );
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
@@ -135,17 +158,14 @@ const Dashboard: React.FC = () => {
         </h2>
 
         {/* Module Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-6">
           {[
-            {
-              key: "investments",
-              label: "Investments",
-              count: investments.length,
-            },
+            { key: "investments", label: "Investments", count: investments.length },
             { key: "assets", label: "Assets", count: assets.length },
             { key: "expenses", label: "Expenses", count: expenses.length },
             { key: "students", label: "Students", count: students.length },
             { key: "teachers", label: "Teachers", count: teachers.length },
+            { key: "teacherPays", label: "Teacher Payments", count: teacherPays.length },
           ].map((module) => (
             <div
               key={module.key}
@@ -172,44 +192,22 @@ const Dashboard: React.FC = () => {
                     {
                       label: "Amount",
                       data: Object.values(investmentByCategory),
-                      backgroundColor: [
-                        "#03C0C8",
-                        "#04337B",
-                        "#FF6384",
-                        "#FFCE56",
-                        "#36A2EB",
-                      ],
+                      backgroundColor: ["#03C0C8","#04337B","#FF6384","#FFCE56","#36A2EB"],
                     },
                   ],
                 }}
-                options={{
-                  plugins: {
-                    legend: {
-                      position: "bottom",
-                      labels: { font: { size: 12 } },
-                    },
-                  },
-                  maintainAspectRatio: false,
-                }}
+                options={{ plugins: { legend: { position: "bottom", labels: { font: { size: 12 } } } }, maintainAspectRatio: false }}
               />
             </div>
           )}
 
           {selectedModule === "assets" && (
             <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64">
-              <h3 className="text-lg font-semibold mb-2 text-center">
-                Assets Over Time
-              </h3>
+              <h3 className="text-lg font-semibold mb-2 text-center">Assets Over Time</h3>
               <Bar
                 data={{
                   labels: Object.keys(assetByMonth),
-                  datasets: [
-                    {
-                      label: "Assets Value",
-                      data: Object.values(assetByMonth),
-                      backgroundColor: "#03C0C8",
-                    },
-                  ],
+                  datasets: [{ label: "Assets Value", data: Object.values(assetByMonth), backgroundColor: "#03C0C8" }],
                 }}
                 options={{ maintainAspectRatio: false }}
               />
@@ -218,19 +216,11 @@ const Dashboard: React.FC = () => {
 
           {selectedModule === "expenses" && (
             <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64">
-              <h3 className="text-lg font-semibold mb-2 text-center">
-                Expenses Over Time
-              </h3>
+              <h3 className="text-lg font-semibold mb-2 text-center">Expenses Over Time</h3>
               <Bar
                 data={{
                   labels: Object.keys(expensesByMonth),
-                  datasets: [
-                    {
-                      label: "Expenses Amount",
-                      data: Object.values(expensesByMonth),
-                      backgroundColor: "#FF6384",
-                    },
-                  ],
+                  datasets: [{ label: "Expenses Amount", data: Object.values(expensesByMonth), backgroundColor: "#FF6384" }],
                 }}
                 options={{ maintainAspectRatio: false }}
               />
@@ -240,18 +230,27 @@ const Dashboard: React.FC = () => {
           {selectedModule === "students" && (
             <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64 flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold mb-2">Total Students</h3>
-              <p className="text-4xl font-bold text-[#03C0C8]">
-                {students.length}
-              </p>
+              <p className="text-4xl font-bold text-[#03C0C8]">{students.length}</p>
             </div>
           )}
 
           {selectedModule === "teachers" && (
             <div className="bg-white rounded-2xl shadow-lg p-4 w-80 h-64 flex flex-col justify-center items-center">
               <h3 className="text-lg font-semibold mb-2">Total Teachers</h3>
-              <p className="text-4xl font-bold text-[#03C0C8]">
-                {teachers.length}
-              </p>
+              <p className="text-4xl font-bold text-[#03C0C8]">{teachers.length}</p>
+            </div>
+          )}
+
+          {selectedModule === "teacherPays" && (
+            <div className="bg-white rounded-2xl shadow-lg p-4 w-96 h-64">
+              <h3 className="text-lg font-semibold mb-2 text-center">Teacher Payments Over Time</h3>
+              <Bar
+                data={{
+                  labels: Object.keys(teacherPayByMonth),
+                  datasets: [{ label: "Total Paid", data: Object.values(teacherPayByMonth), backgroundColor: "#36A2EB" }],
+                }}
+                options={{ maintainAspectRatio: false }}
+              />
             </div>
           )}
         </div>

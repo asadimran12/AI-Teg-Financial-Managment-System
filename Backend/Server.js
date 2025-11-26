@@ -7,6 +7,7 @@ const teacherrouter = require("./routers/Teachers_router");
 const investrouter = require("./routers/Investment_router");
 const assetrouter = require("./routers/Assests_router");
 const DErouter = require("./routers/daily_expense_router");
+const TProuter=require("./routers/Teacherpay_router")
 const cors = require("cors");
 require("dotenv").config();
 
@@ -59,6 +60,8 @@ app.use("/api/teachers", teacherrouter);
 app.use("/api/investment", investrouter);
 app.use("/api/assets", assetrouter);
 app.use("/api/daily-expenses", DErouter);
+app.use("/api/teacherpay", TProuter);
+
 
 // Simple route
 app.get("/", (req, res) => {
