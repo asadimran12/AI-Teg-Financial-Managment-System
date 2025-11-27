@@ -35,7 +35,7 @@ export const DailyExpenses: React.FC = () => {
       }
     };
     fetchExpenses();
-  }, []);
+  }, [apiUrl]);
 
   // Add or update expense
   const handleSubmit = async () => {

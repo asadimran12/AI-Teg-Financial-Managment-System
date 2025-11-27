@@ -35,7 +35,7 @@ export const Investment: React.FC = () => {
       }
     };
     fetchInvestments();
-  }, []);
+  }, [apiUrl]);
 
   // Add or Update investment
   const handleSubmit = async () => {
