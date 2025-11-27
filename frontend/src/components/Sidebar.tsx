@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
+import logo from "../assets/Logo.png"
 
 const Sidebar: React.FC = () => {
   const location = useLocation();
@@ -39,9 +40,13 @@ const Sidebar: React.FC = () => {
         `}
       >
         <div className="flex justify-between items-center mb-10">
-          <h2 className="text-2xl font-bold" style={{ color: "#03C0C8" }}>
-            AITeg Academy
-          </h2>
+          {/* UPDATED LOGO SECTION */}
+          {/* Added bg-white, padding, and rounded corners to make logo visible */}
+          <img 
+            src={logo} 
+            alt="AITeg Academy" 
+            className="bg-white p-2 rounded-lg w-32 h-auto object-contain"
+          />
 
           {/* Close button */}
           <button
