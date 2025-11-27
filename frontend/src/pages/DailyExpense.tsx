@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface DailyExpense {
   id: number;
@@ -21,10 +23,11 @@ export const DailyExpenses: React.FC = () => {
     date: "",
   });
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [filterMonth, setFilterMonth] = useState("");
 
   const apiUrl = import.meta.env.VITE_BACKEND;
 
-  // Fetch expenses on mount
+  // Fetch expenses
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
@@ -37,7 +40,7 @@ export const DailyExpenses: React.FC = () => {
     fetchExpenses();
   }, [apiUrl]);
 
-  // Add or update expense
+  // Add / update expense
   const handleSubmit = async () => {
     if (!form.expense_by || form.amount <= 0) return;
 
@@ -76,6 +79,25 @@ export const DailyExpenses: React.FC = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  // Filtered by month
+  const filteredExpenses = expenses.filter(e =>
+    filterMonth === "" || e.date.startsWith(filterMonth)
+  );
+
+  // Export PDF
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Daily Expenses Report", 14, 15);
+
+    autoTable(doc, {
+      startY: 20,
+      head: [["Expense By", "Amount", "Category", "Description", "Date"]],
+      body: filteredExpenses.map(e => [e.expense_by, e.amount, e.category, e.description, e.date]),
+    });
+
+    doc.save("Daily_Expenses_Report.pdf");
   };
 
   return (
@@ -130,6 +152,22 @@ export const DailyExpenses: React.FC = () => {
           </div>
         </div>
 
+        {/* Filter & Export */}
+        <div className="flex gap-4 items-center mb-4">
+          <input
+            type="month"
+            className="border rounded-lg px-3 py-2"
+            value={filterMonth}
+            onChange={e => setFilterMonth(e.target.value)}
+          />
+          <button
+            className="bg-[#03C0C8] text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
+            onClick={exportPDF}
+          >
+            Export PDF
+          </button>
+        </div>
+
         {/* Expenses Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -144,8 +182,8 @@ export const DailyExpenses: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {expenses.length > 0 ? (
-                expenses.map((e, idx) => (
+              {filteredExpenses.length > 0 ? (
+                filteredExpenses.map((e, idx) => (
                   <tr key={e.id} className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 transition" : "hover:bg-gray-100 transition"}>
                     <td className="py-3 px-6 font-medium text-[#04337B]">{e.expense_by}</td>
                     <td className="py-3 px-6">{e.amount}</td>
@@ -153,14 +191,14 @@ export const DailyExpenses: React.FC = () => {
                     <td className="py-3 px-6">{e.description}</td>
                     <td className="py-3 px-6">{e.date}</td>
                     <td className="py-3 px-6 flex gap-2">
-                      <button className="bg-yellow-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow" onClick={() => handleEdit(e)}>Edit</button>
-                      <button className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow" onClick={() => handleDelete(e.id)}>Delete</button>
+                      <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" onClick={() => handleEdit(e)}>Edit</button>
+                      <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" onClick={() => handleDelete(e.id)}>Delete</button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center py-4 text-gray-500">No expenses added yet.</td>
+                  <td colSpan={6} className="text-center py-4 text-gray-500">No expenses found for this month.</td>
                 </tr>
               )}
             </tbody>

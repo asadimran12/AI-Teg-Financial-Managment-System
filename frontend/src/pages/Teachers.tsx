@@ -56,15 +56,25 @@ const Teachers: React.FC = () => {
 
     try {
       if (editingId) {
-        const res = await axios.put(`${apiUrl}/api/teachers/${editingId}`, form);
-        setTeachers(teachers.map(t => (t.id === editingId ? res.data : t)));
+        const res = await axios.put(
+          `${apiUrl}/api/teachers/${editingId}`,
+          form
+        );
+        setTeachers(teachers.map((t) => (t.id === editingId ? res.data : t)));
         setEditingId(null);
       } else {
         const res = await axios.post(`${apiUrl}/api/teachers`, form);
         setTeachers([...teachers, res.data]);
       }
 
-      setForm({ name: "", courses: [], Phone_number: "", email: "", pay: 0, pay_status: "unpaid" });
+      setForm({
+        name: "",
+        courses: [],
+        Phone_number: "",
+        email: "",
+        pay: 0,
+        pay_status: "unpaid",
+      });
     } catch (err) {
       console.error(err);
     }
@@ -74,7 +84,7 @@ const Teachers: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`${apiUrl}/api/teachers/${id}`);
-      setTeachers(teachers.filter(t => t.id !== id));
+      setTeachers(teachers.filter((t) => t.id !== id));
     } catch (err) {
       console.error(err);
     }
@@ -101,7 +111,7 @@ const Teachers: React.FC = () => {
   };
 
   const handleCourseRemove = (courseName: string) => {
-    setForm({ ...form, courses: form.courses.filter(c => c !== courseName) });
+    setForm({ ...form, courses: form.courses.filter((c) => c !== courseName) });
   };
 
   return (
@@ -109,7 +119,9 @@ const Teachers: React.FC = () => {
       <Sidebar />
 
       <main className="flex-1 p-6 overflow-auto">
-        <h2 className="text-3xl font-bold text-[#04337B] mb-6">Teachers Dashboard</h2>
+        <h2 className="text-3xl font-bold text-[#04337B] mb-6">
+          Teachers Dashboard
+        </h2>
 
         {/* Add / Edit Teacher Form */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
@@ -121,51 +133,61 @@ const Teachers: React.FC = () => {
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
               placeholder="Name"
               value={form.name}
-              onChange={e => setForm({ ...form, name: e.target.value })}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
               placeholder="Phone"
               value={form.Phone_number}
-              onChange={e => setForm({ ...form, Phone_number: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, Phone_number: e.target.value })
+              }
             />
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
               placeholder="Email"
               value={form.email}
-              onChange={e => setForm({ ...form, email: e.target.value })}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
             <input
               type="number"
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
               placeholder="Pay"
               value={form.pay}
-              onChange={e => setForm({ ...form, pay: +e.target.value })}
+              onChange={(e) => setForm({ ...form, pay: +e.target.value })}
             />
 
             {/* Courses Multi-select */}
             <div className="border rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#03C0C8] shadow-sm">
               <div className="flex flex-wrap gap-1 mb-2">
-                {form.courses.map(c => (
+                {form.courses.map((c) => (
                   <span
                     key={c}
                     className="bg-[#03C0C8] text-white px-2 py-1 rounded-full flex items-center gap-1"
                   >
                     {c}
-                    <button type="button" onClick={() => handleCourseRemove(c)} className="text-white font-bold">×</button>
+                    <button
+                      type="button"
+                      onClick={() => handleCourseRemove(c)}
+                      className="text-white font-bold"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
               </div>
               <select
                 className="w-full border-none focus:ring-0 outline-none"
                 value=""
-                onChange={e => handleCourseSelect(e.target.value)}
+                onChange={(e) => handleCourseSelect(e.target.value)}
               >
                 <option value="">Select course</option>
                 {courses
-                  .filter(c => !form.courses.includes(c.name))
-                  .map(c => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
+                  .filter((c) => !form.courses.includes(c.name))
+                  .map((c) => (
+                    <option key={c.id} value={c.name}>
+                      {c.name}
+                    </option>
                   ))}
               </select>
             </div>
@@ -189,31 +211,50 @@ const Teachers: React.FC = () => {
                 <th className="py-3 px-6 text-left">Phone</th>
                 <th className="py-3 px-6 text-left">Email</th>
                 <th className="py-3 px-6 text-left">Pay</th>
-                <th className="py-3 px-6 text-left">Status</th>
                 <th className="py-3 px-6 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {teachers.length > 0 ? (
                 teachers.map((t, idx) => (
-                  <tr key={t.id} className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 transition" : "hover:bg-gray-100 transition"}>
-                    <td className="py-3 px-6 font-medium text-[#04337B]">{t.name}</td>
+                  <tr
+                    key={t.id}
+                    className={
+                      idx % 2 === 0
+                        ? "bg-gray-50 hover:bg-gray-100 transition"
+                        : "hover:bg-gray-100 transition"
+                    }
+                  >
+                    <td className="py-3 px-6 font-medium text-[#04337B]">
+                      {t.name}
+                    </td>
                     <td className="py-3 px-6">{t.courses.join(", ")}</td>
                     <td className="py-3 px-6">{t.Phone_number}</td>
                     <td className="py-3 px-6">{t.email}</td>
-                    <td className="py-3 px-6 font-semibold text-[#03C0C8]">{t.pay}</td>
-                    <td className={`py-3 px-6 font-semibold ${t.pay_status === "paid" ? "text-green-600" : "text-red-600"}`}>
-                      {t.pay_status.toUpperCase()}
+                    <td className="py-3 px-6 font-semibold text-[#03C0C8]">
+                      {t.pay}
                     </td>
                     <td className="py-3 px-6 flex gap-2">
-                      <button className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow cursor-pointer" onClick={() => handleEdit(t)}>Edit</button>
-                      <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow cursor-pointer" onClick={() => handleDelete(t.id)}>Delete</button>
+                      <button
+                        className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow cursor-pointer"
+                        onClick={() => handleEdit(t)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow cursor-pointer"
+                        onClick={() => handleDelete(t.id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500">No teachers added yet.</td>
+                  <td colSpan={7} className="text-center py-4 text-gray-500">
+                    No teachers added yet.
+                  </td>
                 </tr>
               )}
             </tbody>

@@ -33,7 +33,7 @@ const Sidebar: React.FC = () => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen w-64 p-6 flex flex-col shadow-lg z-50 
+          fixed top-0 left-0 min-h-screen w-64 p-6 flex flex-col shadow-lg z-50 
           bg-[#04337B] text-white transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:static md:translate-x-0 md:block

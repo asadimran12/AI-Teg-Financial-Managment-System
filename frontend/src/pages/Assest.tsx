@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface Asset {
   id: number;
@@ -23,6 +25,7 @@ export const Assets: React.FC = () => {
     location: "",
   });
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [filterMonth, setFilterMonth] = useState("");
 
   const apiUrl = import.meta.env.VITE_BACKEND;
 
@@ -87,6 +90,34 @@ export const Assets: React.FC = () => {
       location: asset.location,
     });
     setEditingId(asset.id);
+  };
+
+  // Filtered by month
+  const filteredAssets = assets.filter(
+    (a) => filterMonth === "" || a.purchase_date.startsWith(filterMonth)
+  );
+
+  // Export PDF
+  const exportPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Assets Report", 14, 15);
+
+    autoTable(doc, {
+      startY: 20,
+      head: [
+        ["Name", "Category", "Purchase Date", "Value", "Quantity", "Location"],
+      ],
+      body: filteredAssets.map((a) => [
+        a.name,
+        a.category,
+        a.purchase_date,
+        a.value,
+        a.quantity,
+        a.location,
+      ]),
+    });
+
+    doc.save("Assets_Report.pdf");
   };
 
   return (
@@ -154,6 +185,22 @@ export const Assets: React.FC = () => {
           </div>
         </div>
 
+        {/* Filter & Export */}
+        <div className="flex gap-4 items-center mb-4">
+          <input
+            type="month"
+            className="border rounded-lg px-3 py-2"
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+          />
+          <button
+            className="bg-[#03C0C8] text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
+            onClick={exportPDF}
+          >
+            Export PDF
+          </button>
+        </div>
+
         {/* Assets Table */}
         <div className="bg-white rounded-2xl shadow-lg overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -169,8 +216,8 @@ export const Assets: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {assets.length > 0 ? (
-                assets.map((a, idx) => (
+              {filteredAssets.length > 0 ? (
+                filteredAssets.map((a, idx) => (
                   <tr
                     key={a.id}
                     className={
@@ -189,13 +236,13 @@ export const Assets: React.FC = () => {
                     <td className="py-3 px-6">{a.location}</td>
                     <td className="py-3 px-6 flex gap-2">
                       <button
-                        className="bg-yellow-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow"
+                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                         onClick={() => handleEdit(a)}
                       >
                         Edit
                       </button>
                       <button
-                        className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                         onClick={() => handleDelete(a.id)}
                       >
                         Delete
@@ -206,7 +253,7 @@ export const Assets: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center py-4 text-gray-500">
-                    No assets added yet.
+                    No assets found for this month.
                   </td>
                 </tr>
               )}

@@ -5,7 +5,7 @@ import axios from "axios";
 interface Teacher {
   id: number;
   name: string;
-  pay?: number; // optional if teacher has salary field
+  pay?: number;
 }
 
 interface TeacherPay {
@@ -13,19 +13,22 @@ interface TeacherPay {
   name: string;
   pay: number;
   status: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const Teachers: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [teachersPay, setTeachersPay] = useState<TeacherPay[]>([]);
-
   const [form, setForm] = useState({
     name: "",
     pay: 0,
     status: "paid",
   });
-
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [filterStatus, setFilterStatus] = useState(""); // filter for paid/unpaid
+  const [filterMonth, setFilterMonth] = useState(""); // filter for month
 
   const apiUrl = import.meta.env.VITE_BACKEND;
 
@@ -57,11 +60,9 @@ const Teachers: React.FC = () => {
           `${apiUrl}/api/teacherpay/${editingId}`,
           form
         );
-
         setTeachersPay(
           teachersPay.map((t) => (t.id === editingId ? res.data.data : t))
         );
-
         setEditingId(null);
       } else {
         const res = await axios.post(`${apiUrl}/api/teacherpay/add`, form);
@@ -94,6 +95,16 @@ const Teachers: React.FC = () => {
     setEditingId(teacher.id);
   };
 
+  // Filtered teacher pay list
+  const filteredTeachersPay = teachersPay.filter((t) => {
+    const statusMatch =
+      filterStatus === "" ||
+      t.status.toLowerCase() === filterStatus.toLowerCase();
+    const monthMatch =
+      filterMonth === "" || t.createdAt.startsWith(filterMonth);
+    return statusMatch && monthMatch;
+  });
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
@@ -110,7 +121,6 @@ const Teachers: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Teacher Dropdown */}
             <select
               className="border rounded-lg px-4 py-2"
               value={form.name}
@@ -118,7 +128,6 @@ const Teachers: React.FC = () => {
                 const selectedTeacher = teachers.find(
                   (t) => t.name === e.target.value
                 );
-
                 setForm({
                   ...form,
                   name: e.target.value,
@@ -134,7 +143,6 @@ const Teachers: React.FC = () => {
               ))}
             </select>
 
-            {/* Pay Auto-filled */}
             <input
               type="number"
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 shadow-sm"
@@ -143,7 +151,6 @@ const Teachers: React.FC = () => {
               readOnly
             />
 
-            {/* Status */}
             <select
               className="border rounded-lg px-4 py-2"
               value={form.status}
@@ -153,7 +160,6 @@ const Teachers: React.FC = () => {
               <option value="unpaid">Unpaid</option>
             </select>
 
-            {/* Submit Button */}
             <button
               className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg mt-2 md:col-span-3"
               onClick={handleSubmit}
@@ -161,6 +167,36 @@ const Teachers: React.FC = () => {
               {editingId ? "Update Record" : "Add Record"}
             </button>
           </div>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center gap-4 mb-6">
+          <select
+            className="border rounded-lg px-3 py-2 w-40"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="">All Status</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+
+          <input
+            type="month"
+            className="border rounded-lg px-3 py-2 w-40"
+            value={filterMonth}
+            onChange={(e) => setFilterMonth(e.target.value)}
+          />
+
+          <button
+            className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
+            onClick={() => {
+              setFilterStatus("");
+              setFilterMonth("");
+            }}
+          >
+            Clear
+          </button>
         </div>
 
         {/* Table */}
@@ -171,13 +207,14 @@ const Teachers: React.FC = () => {
                 <th className="py-3 px-6">Name</th>
                 <th className="py-3 px-6">Pay</th>
                 <th className="py-3 px-6">Status</th>
+                <th className="py-3 px-6">Date</th>
                 <th className="py-3 px-6">Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {teachersPay.length > 0 ? (
-                teachersPay.map((t) => (
+              {filteredTeachersPay.length > 0 ? (
+                filteredTeachersPay.map((t) => (
                   <tr key={t.id} className="border-b">
                     <td className="py-3 px-6">{t.name}</td>
                     <td className="py-3 px-6">{t.pay}</td>
@@ -192,6 +229,7 @@ const Teachers: React.FC = () => {
                         {t.status.toUpperCase()}
                       </span>
                     </td>
+                    <td className="py-3 px-6">{t.updatedAt?.split("T")[0]}</td>
                     <td className="py-3 px-6 flex gap-2">
                       <button
                         className="bg-yellow-500 cursor-pointer text-white px-3 py-1 rounded"
@@ -199,7 +237,6 @@ const Teachers: React.FC = () => {
                       >
                         Edit
                       </button>
-
                       <button
                         className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded"
                         onClick={() => handleDelete(t.id)}
@@ -211,8 +248,8 @@ const Teachers: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center p-4 text-gray-500">
-                    No teacher payments added yet.
+                  <td colSpan={5} className="text-center p-4 text-gray-500">
+                    No records found.
                   </td>
                 </tr>
               )}
