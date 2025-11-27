@@ -122,7 +122,7 @@ export const DailyExpenses: React.FC = () => {
               onChange={e => setForm({ ...form, date: e.target.value })}
             />
             <button
-              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
               onClick={handleSubmit}
             >
               {editingId ? "Update Expense" : "Add Expense"}
@@ -153,8 +153,8 @@ export const DailyExpenses: React.FC = () => {
                     <td className="py-3 px-6">{e.description}</td>
                     <td className="py-3 px-6">{e.date}</td>
                     <td className="py-3 px-6 flex gap-2">
-                      <button className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow" onClick={() => handleEdit(e)}>Edit</button>
-                      <button className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow" onClick={() => handleDelete(e.id)}>Delete</button>
+                      <button className="bg-yellow-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-yellow-600 transition shadow" onClick={() => handleEdit(e)}>Edit</button>
+                      <button className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow" onClick={() => handleDelete(e.id)}>Delete</button>
                     </td>
                   </tr>
                 ))

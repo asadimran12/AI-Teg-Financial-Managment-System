@@ -33,6 +33,7 @@ const Students: React.FC = () => {
     fee: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,7 +43,8 @@ const Students: React.FC = () => {
           axios.get(`${apiUrl}/api/courses`),
         ]);
         setStudents(studentsRes.data);
-        setCourses(coursesRes.data);
+        setCourses(coursesRes.data.data);
+
       } catch (error) {
         console.log(error);
       }
@@ -215,7 +217,7 @@ const Students: React.FC = () => {
             />
 
             <button
-              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow"
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
               onClick={handleAddOrUpdate}
             >
               {isEditing ? "Update Student" : "Add Student"}
@@ -237,7 +239,7 @@ const Students: React.FC = () => {
                 <th className="py-3 px-6 text-left">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 ">
               {students.length > 0 ? (
                 students.map((student, idx) => (
                   <tr
@@ -245,7 +247,7 @@ const Students: React.FC = () => {
                     className={
                       idx % 2 === 0
                         ? "bg-gray-50 hover:bg-gray-100 transition"
-                        : "hover:bg-gray-100 transition"
+                        : "hover:bg-gray-100 transition "
                     }
                   >
                     <td className="py-3 px-6 font-medium text-[#04337B]">
@@ -260,13 +262,13 @@ const Students: React.FC = () => {
                     </td>
                     <td className="py-3 px-6 flex gap-2">
                       <button
-                        className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition shadow"
+                        className="bg-green-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-green-600 transition shadow"
                         onClick={() => handleEdit(student)}
                       >
                         Edit
                       </button>
                       <button
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
+                        className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
                         onClick={() => handleDelete(student.id)}
                       >
                         Delete

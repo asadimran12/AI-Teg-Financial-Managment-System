@@ -155,7 +155,7 @@ const Teachers: React.FC = () => {
 
             {/* Submit Button */}
             <button
-              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg mt-2 md:col-span-3"
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg mt-2 md:col-span-3"
               onClick={handleSubmit}
             >
               {editingId ? "Update Record" : "Add Record"}
@@ -194,14 +194,14 @@ const Teachers: React.FC = () => {
                     </td>
                     <td className="py-3 px-6 flex gap-2">
                       <button
-                        className="bg-yellow-500 text-white px-3 py-1 rounded"
+                        className="bg-yellow-500 cursor-pointer text-white px-3 py-1 rounded"
                         onClick={() => handleEdit(t)}
                       >
                         Edit
                       </button>
 
                       <button
-                        className="bg-red-500 text-white px-3 py-1 rounded"
+                        className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded"
                         onClick={() => handleDelete(t.id)}
                       >
                         Delete

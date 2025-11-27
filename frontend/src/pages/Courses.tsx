@@ -10,70 +10,95 @@ interface Course {
   description: string;
 }
 
+const apiUrl = import.meta.env.VITE_BACKEND;
+
 const Courses: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [form, setForm] = useState({
+    id: 0,
     name: "",
     fee: 0,
     duration: "",
     description: "",
   });
+  const [isEditing, setIsEditing] = useState(false);
 
-  const apiUrl = import.meta.env.VITE_BACKEND; 
+  // Fetch all courses
 
-  // Fetch all courses on mount
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/courses/`);
-        setCourses(response.data); 
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
 
-    fetchCourses();
-  }, [apiUrl]);
-
-  // Add a new course
-  const handleAdd = async () => {
-    if (!form.name || !form.duration) return;
-
+     const fetchCourses = async () => {
     try {
-      const response = await axios.post(`${apiUrl}/api/courses/`, form);
-      const savedCourse = response.data;
-      setCourses([...courses, savedCourse]);
-      setForm({ name: "", fee: 0, duration: "", description: "" });
+      const res = await axios.get(`${apiUrl}/api/courses`);
+      setCourses(res.data.data || []);
     } catch (error) {
-      console.error("Error adding course:", error);
+      console.log("Error fetching courses:", error);
     }
   };
 
-  // Delete a course
+    fetchCourses();
+  }, []);
+
+  // Add or Update course
+  const handleAddOrUpdate = async () => {
+    if (!form.name || !form.duration) return;
+
+    try {
+      if (isEditing) {
+        // Update
+        const res = await axios.put(`${apiUrl}/api/courses/${form.id}`, form);
+        setCourses(
+          courses.map((c) => (c.id === form.id ? res.data.data : c))
+        );
+      } else {
+        // Add
+        const res = await axios.post(`${apiUrl}/api/courses`, form);
+        setCourses([...courses, res.data.data]);
+      }
+
+      // Reset form
+      setForm({ id: 0, name: "", fee: 0, duration: "", description: "" });
+      setIsEditing(false);
+    } catch (error) {
+      console.log("Error adding/updating course:", error);
+    }
+  };
+
+  // Edit course
+  const handleEdit = (course: Course) => {
+    setForm({
+      id: course.id,
+      name: course.name,
+      fee: course.fee,
+      duration: course.duration,
+      description: course.description,
+    });
+    setIsEditing(true);
+  };
+
+  // Delete course
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`${apiUrl}/api/courses/${id}`);
-      setCourses(courses.filter((course) => course.id !== id));
+      setCourses(courses.filter((c) => c.id !== id));
     } catch (error) {
-      console.error("Error deleting course:", error);
+      console.log("Error deleting course:", error);
     }
   };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">
           Courses Dashboard
         </h2>
 
-        {/* Add Course Form */}
+        {/* Add / Update Course Form */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <h3 className="text-xl font-semibold text-[#04337B] mb-4">
-            Add New Course
+            {isEditing ? "Update Course" : "Add New Course"}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <input
@@ -91,7 +116,7 @@ const Courses: React.FC = () => {
             />
             <input
               className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Duration (e.g., 2 Months)"
+              placeholder="Duration"
               value={form.duration}
               onChange={(e) => setForm({ ...form, duration: e.target.value })}
             />
@@ -104,10 +129,10 @@ const Courses: React.FC = () => {
               }
             />
             <button
-              className="bg-[#03C0C8] text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-              onClick={handleAdd}
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+              onClick={handleAddOrUpdate}
             >
-              Add Course
+              {isEditing ? "Update Course" : "Add Course"}
             </button>
           </div>
         </div>
@@ -117,9 +142,9 @@ const Courses: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-[#03C0C8] text-white">
               <tr>
-                <th className="py-3 px-6 text-left">Course Name</th>
+                <th className="py-3 px-6 text-left">Name</th>
                 <th className="py-3 px-6 text-left">Fee</th>
-                <th className="py-3 px-6 text-left">Duration (in Months)</th>
+                <th className="py-3 px-6 text-left">Duration</th>
                 <th className="py-3 px-6 text-left">Description</th>
                 <th className="py-3 px-6 text-left">Actions</th>
               </tr>
@@ -135,17 +160,19 @@ const Courses: React.FC = () => {
                         : "hover:bg-gray-100 transition"
                     }
                   >
-                    <td className="py-3 px-6 font-medium text-[#04337B]">
-                      {course.name}
-                    </td>
-                    <td className="py-3 px-6 font-semibold text-[#03C0C8]">
-                      Rs.{course.fee}
-                    </td>
+                    <td className="py-3 px-6">{course.name}</td>
+                    <td className="py-3 px-6">{course.fee}</td>
                     <td className="py-3 px-6">{course.duration}</td>
                     <td className="py-3 px-6">{course.description}</td>
-                    <td className="py-3 px-6">
+                    <td className="py-3 px-6 flex gap-2">
                       <button
-                        className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
+                        className="bg-green-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-green-600 transition shadow"
+                        onClick={() => handleEdit(course)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-red-600 transition shadow"
                         onClick={() => handleDelete(course.id)}
                       >
                         Delete
