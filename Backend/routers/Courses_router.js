@@ -1,20 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const courseController = require("../controllers/Courses_controller");
+const middleware=require("../midlleware/auth_middleware")
 
-// CREATE Course
-router.post("/", courseController.Addcourse);
-
-// READ All Courses
-router.get("/", courseController.GetCourse);
-
-// READ Specific Course
-router.get("/:id", courseController.GetSpecificCourse);
-
-// UPDATE Course
-router.put("/:id", courseController.UpdateCourse);
-
-// DELETE Course
-router.delete("/:id", courseController.DeleteCoourse);
+router.post("/",middleware, courseController.Addcourse);
+router.get("/",middleware, courseController.GetCourse);
+router.get("/:id", middleware,courseController.GetSpecificCourse);
+router.put("/:id",middleware, courseController.UpdateCourse);
+router.delete("/:id", middleware,courseController.DeleteCoourse);
 
 module.exports = router;

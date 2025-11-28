@@ -8,7 +8,7 @@ const Sidebar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const routes = [
-    { path: "/", text: "Dashboard" },
+    { path: "/home", text: "Dashboard" },
     { path: "/student", text: "Students" },
     { path: "/teachers", text: "Teachers" },
     { path: "/courses", text: "Courses" },

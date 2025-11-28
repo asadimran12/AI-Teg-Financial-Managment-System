@@ -29,11 +29,16 @@ export const Assets: React.FC = () => {
 
   const apiUrl = import.meta.env.VITE_BACKEND;
 
+  // 🔥 Get token from localStorage
+  const token = localStorage.getItem("aiteg_token");
+
   // Fetch assets on mount
   useEffect(() => {
     const fetchAssets = async () => {
       try {
-        const res = await axios.get(`${apiUrl}/api/assets`);
+        const res = await axios.get(`${apiUrl}/api/assets`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAssets(res.data);
       } catch (err) {
         console.error(err);
@@ -49,11 +54,19 @@ export const Assets: React.FC = () => {
 
     try {
       if (editingId) {
-        const res = await axios.put(`${apiUrl}/api/assets/${editingId}`, form);
+        const res = await axios.put(
+          `${apiUrl}/api/assets/${editingId}`,
+          form,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setAssets(assets.map((a) => (a.id === editingId ? res.data : a)));
         setEditingId(null);
       } else {
-        const res = await axios.post(`${apiUrl}/api/assets`, form);
+        const res = await axios.post(`${apiUrl}/api/assets`, form, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAssets([...assets, res.data]);
       }
       setForm({
@@ -72,7 +85,9 @@ export const Assets: React.FC = () => {
   // Delete asset
   const handleDelete = async (id: number) => {
     try {
-      await axios.delete(`${apiUrl}/api/assets/${id}`);
+      await axios.delete(`${apiUrl}/api/assets/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setAssets(assets.filter((a) => a.id !== id));
     } catch (err) {
       console.error(err);
