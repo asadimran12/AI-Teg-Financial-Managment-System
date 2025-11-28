@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     if (token) {
       navigate("/home");
     }
-  }, []);
+  }, [apiUrl, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
