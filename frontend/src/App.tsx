@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./pages/Home";
+import Report from "./pages/Report ";
 import Student from "./pages/Student";
 import Courses from "./pages/Courses";
 import Teachers from "./pages/Teachers";
@@ -19,6 +20,10 @@ const App = () => {
     {
       path: "/",
       element: <Login />,
+    },
+    {
+      path: "/report",
+      element: <Report />,
     },
 
     // Protected Routes

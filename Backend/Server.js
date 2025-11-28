@@ -7,9 +7,9 @@ const teacherrouter = require("./routers/Teachers_router");
 const investrouter = require("./routers/Investment_router");
 const assetrouter = require("./routers/Assests_router");
 const DErouter = require("./routers/daily_expense_router");
-const TProuter=require("./routers/Teacherpay_router")
+const TProuter = require("./routers/Teacherpay_router");
 const cors = require("cors");
-const userRouter = require('./routers/User_router');
+const userRouter = require("./routers/User_router");
 require("dotenv").config();
 
 const app = express();
@@ -61,8 +61,7 @@ app.use("/api/investment", investrouter);
 app.use("/api/assets", assetrouter);
 app.use("/api/daily-expenses", DErouter);
 app.use("/api/teacherpay", TProuter);
-app.use('/api/users', userRouter);
-
+app.use("/api/users", userRouter);
 
 // Simple route
 app.get("/", (req, res) => {
