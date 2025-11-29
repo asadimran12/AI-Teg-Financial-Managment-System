@@ -53,7 +53,7 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full mx-auto p-6 bg-white rounded shadow">
         <h2 className="text-2xl font-semibold mb-4 text-center">
-          Login to AITeg
+          Login to AI-TEG-FMS
         </h2>
         {error && (
           <div className="bg-red-100 text-red-700 p-2 mb-4 rounded">
