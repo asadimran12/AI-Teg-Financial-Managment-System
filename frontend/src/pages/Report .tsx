@@ -276,6 +276,10 @@ const Report: React.FC = () => {
             <option value="1">Last 1 Month</option>
             <option value="2">Last 2 Months</option>
             <option value="3">Last 3 Months</option>
+            <option value="4">Last 4 Months</option>
+            <option value="5">Last 5 Months</option>
+            <option value="6">Last 6 Months</option>
+            
           </select>
 
           <button
