@@ -1,9 +1,10 @@
-const Student = require("../model/Student_model"); 
+const Student = require("../model/Student_model");
 
 // Add a new student
 const AddStudent = async (req, res) => {
   try {
-    const { name, father_name, Address, Phone_number, fee, course } = req.body;
+    const { name, father_name, Address, Phone_number, fee, course , Discount,
+      fee_after_discount,} = req.body;
     let courseArray = [];
     if (course) {
       if (Array.isArray(course)) {
@@ -19,7 +20,9 @@ const AddStudent = async (req, res) => {
       Address,
       Phone_number,
       fee,
-      course: courseArray, // store as JSON array
+      Discount,
+      fee_after_discount,
+      course: courseArray, 
     });
 
     res.status(201).json(student);
@@ -59,7 +62,16 @@ const GetStudentById = async (req, res) => {
 const UpdateStudent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, father_name, fee, Address, Phone_number, course } = req.body;
+    const {
+      name,
+      father_name,
+      fee,
+      Address,
+      Phone_number,
+      course,
+      Discount,
+      fee_after_discount,
+    } = req.body;
 
     const student = await Student.findOne({ where: { id } });
     if (!student) return res.status(404).json({ error: "Student not found" });
@@ -77,6 +89,8 @@ const UpdateStudent = async (req, res) => {
       fee: fee || student.fee,
       Address: Address || student.Address,
       Phone_number: Phone_number || student.Phone_number,
+      Discount: Discount || student.Discount,
+      fee_after_discount: fee_after_discount || student.fee_after_discount,
       course: courseArray,
     });
 

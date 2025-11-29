@@ -28,6 +28,14 @@ const Students = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    Discount:{
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    fee_after_discount:{
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    }
   },
   {
     tableName: "students",

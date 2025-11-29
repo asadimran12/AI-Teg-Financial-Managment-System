@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+import jsPDF from "jspdf";
 
 interface Student {
   id: number;
@@ -10,6 +11,8 @@ interface Student {
   Phone_number: string;
   course: string[];
   fee: number;
+  Discount?: number;
+  fee_after_discount?: number;
   createdAt?: string;
 }
 
@@ -32,10 +35,11 @@ const Students: React.FC = () => {
     Address: "",
     course: [] as string[],
     fee: 0,
+    Discount: 0,
+    fee_after_discount: 0,
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  // Filters
   const [filterName, setFilterName] = useState("");
   const [filterCourse, setFilterCourse] = useState("");
   const [filterDate, setFilterDate] = useState("");
@@ -65,21 +69,17 @@ const Students: React.FC = () => {
   const handleCourseSelect = (courseName: string) => {
     if (!form.course.includes(courseName)) {
       const newCourses = [...form.course, courseName];
-      setForm({
-        ...form,
-        course: newCourses,
-        fee: calculateTotalFee(newCourses),
-      });
+      const fee = calculateTotalFee(newCourses);
+      const fee_after_discount = fee - (fee * (form.Discount || 0)) / 100;
+      setForm({ ...form, course: newCourses, fee, fee_after_discount });
     }
   };
 
   const handleCourseRemove = (courseName: string) => {
     const newCourses = form.course.filter((c) => c !== courseName);
-    setForm({
-      ...form,
-      course: newCourses,
-      fee: calculateTotalFee(newCourses),
-    });
+    const fee = calculateTotalFee(newCourses);
+    const fee_after_discount = fee - (fee * (form.Discount || 0)) / 100;
+    setForm({ ...form, course: newCourses, fee, fee_after_discount });
   };
 
   const handleAddOrUpdate = async () => {
@@ -102,6 +102,8 @@ const Students: React.FC = () => {
         Address: "",
         course: [],
         fee: 0,
+        Discount: 0,
+        fee_after_discount: 0,
       });
       setIsEditing(false);
     } catch (error) {
@@ -110,7 +112,11 @@ const Students: React.FC = () => {
   };
 
   const handleEdit = (student: Student) => {
-    setForm(student);
+    setForm({
+      ...student,
+      Discount: student.Discount || 0,
+      fee_after_discount: student.fee_after_discount || student.fee,
+    });
     setIsEditing(true);
   };
 
@@ -121,6 +127,76 @@ const Students: React.FC = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  // Generate PDF Challan
+   const generateChallan = (student: Student) => {
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(20);
+    doc.text("AI-TEG-FMS", 105, 20, { align: "center" });
+    doc.setFontSize(12);
+    doc.text("Fee Challan / Receipt", 105, 30, { align: "center" });
+    doc.setLineWidth(0.5);
+    doc.line(14, 35, 196, 35);
+
+    // Student Info
+    doc.setFontSize(12);
+    doc.text(`Name: ${student.name}`, 14, 45);
+    doc.text(`Father Name: ${student.father_name}`, 14, 55);
+    doc.text(`Phone: ${student.Phone_number}`, 14, 65);
+    doc.text(`Address: ${student.Address}`, 14, 75);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 45);
+
+    // Table Header
+    const startY = 85;
+    doc.setFillColor(3, 192, 200);
+    doc.setTextColor(255, 255, 255);
+    doc.rect(14, startY, 182, 10, "F");
+    doc.text("Course", 20, startY + 7);
+    doc.text("Fee", 150, startY + 7);
+
+    // Table Rows
+    doc.setTextColor(0, 0, 0);
+    let rowY = startY + 15;
+    student.course.forEach((cName) => {
+      const course = courses.find((c) => c.name === cName);
+      if (course) {
+        doc.text(course.name, 20, rowY);
+        doc.text(course.fee.toString(), 150, rowY);
+        rowY += 10;
+      }
+    });
+
+    // Total Fee
+    doc.setLineWidth(0.5);
+    doc.line(14, rowY, 196, rowY);
+    doc.text(
+      `Total Fee: ${student.fee}`,
+      20,
+      rowY + 10
+    );
+    doc.text(
+      `Discount: ${student.Discount ?? 0}%`,
+      20,
+      rowY + 20
+    );
+    doc.text(
+      `Fee After Discount: ${student.fee_after_discount ?? student.fee}`,
+      20,
+      rowY + 30
+    );
+
+    // Footer / Signatures
+    const footerY = rowY + 50;
+    doc.text("_____________________", 30, footerY);
+    doc.text("Admin / Treasurer", 25, footerY + 7);
+
+    doc.text("_____________________", 150, footerY);
+    doc.text("Student Signature", 145, footerY + 7);
+
+    doc.save(`${student.name}_challan.pdf`);
   };
 
   const filteredStudents = students.filter((s) => {
@@ -153,7 +229,6 @@ const Students: React.FC = () => {
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
-
             <input
               className="border rounded-lg px-4 py-2"
               placeholder="Father Name"
@@ -162,7 +237,6 @@ const Students: React.FC = () => {
                 setForm({ ...form, father_name: e.target.value })
               }
             />
-
             <input
               className="border rounded-lg px-4 py-2"
               placeholder="Phone"
@@ -171,7 +245,6 @@ const Students: React.FC = () => {
                 setForm({ ...form, Phone_number: e.target.value })
               }
             />
-
             <input
               className="border rounded-lg px-4 py-2"
               placeholder="Address"
@@ -179,7 +252,7 @@ const Students: React.FC = () => {
               onChange={(e) => setForm({ ...form, Address: e.target.value })}
             />
 
-            {/* Multi Course Select */}
+            {/* Courses */}
             <div className="border rounded-lg px-4 py-2">
               <div className="flex flex-wrap gap-1">
                 {form.course.map((c) => (
@@ -221,6 +294,24 @@ const Students: React.FC = () => {
               value={form.fee}
               readOnly
             />
+            <input
+              type="number"
+              className="border rounded-lg px-4 py-2"
+              placeholder="Discount %"
+              value={form.Discount}
+              onChange={(e) => {
+                const discount = parseFloat(e.target.value) || 0;
+                const fee_after_discount = form.fee - (form.fee * discount) / 100;
+                setForm({ ...form, Discount: discount, fee_after_discount });
+              }}
+            />
+            <input
+              type="number"
+              className="border rounded-lg px-4 py-2"
+              placeholder="Fee After Discount"
+              value={form.fee_after_discount}
+              readOnly
+            />
 
             <button
               className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
@@ -231,7 +322,7 @@ const Students: React.FC = () => {
           </div>
         </div>
 
-        {/* ========= SMALL FILTER BAR (NEW) ========= */}
+        {/* ========= FILTER BAR ========= */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center justify-around mb-6">
           <input
             type="text"
@@ -273,7 +364,7 @@ const Students: React.FC = () => {
           </button>
         </div>
 
-        {/* ========= TABLE ========= */}
+        {/* ========= STUDENTS TABLE ========= */}
         <div className="bg-white rounded-xl shadow-lg overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-[#03C0C8] text-white">
@@ -298,7 +389,7 @@ const Students: React.FC = () => {
                     <td className="p-3">{s.Address}</td>
                     <td className="p-3">{s.course.join(", ")}</td>
                     <td className="p-3 font-semibold text-[#03C0C8]">
-                      {s.fee}
+                      {s.fee_after_discount ?? s.fee}
                     </td>
                     <td className="p-3 flex gap-2">
                       <button
@@ -312,6 +403,12 @@ const Students: React.FC = () => {
                         className="bg-red-500 cursor-pointer text-white px-3 py-1 rounded"
                       >
                         Delete
+                      </button>
+                      <button
+                        onClick={() => generateChallan(s)}
+                        className="bg-blue-500 cursor-pointer text-white px-3 py-1 rounded"
+                      >
+                        Generate Challan
                       </button>
                     </td>
                   </tr>
