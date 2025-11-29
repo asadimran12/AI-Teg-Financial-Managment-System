@@ -4,13 +4,61 @@ import Sidebar from "../components/Sidebar";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+interface TableProps {
+  title: string;
+  data: any[];
+  columns: string[];
+  mapper: (item: any) => (string | number | null | undefined)[];
+}
+
+const DetailTable: React.FC<TableProps> = ({ title, data, columns, mapper }) => {
+  return (
+    <div className="bg-white rounded-lg p-4 shadow-md mt-6">
+      <h3 className="text-xl font-bold mb-4">{title}</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full border border-gray-300">
+          <thead className="bg-gray-200">
+            <tr>
+              {columns.map((col, i) => (
+                <th key={i} className="border px-3 py-2 text-left">
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-4">
+                  No Records Found
+                </td>
+              </tr>
+            ) : (
+              data.map((item, i) => (
+                <tr key={i} className="border-b">
+                  {mapper(item).map((val, j) => (
+                    <td key={j} className="border px-3 py-2">
+                      {val}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
 const Report: React.FC = () => {
-  const [students, setStudents] = useState<unknown[]>([]);
-  const [teachers, setTeachers] = useState<unknown[]>([]);
-  const [investments, setInvestments] = useState<unknown[]>([]);
-  const [assets, setAssets] = useState<unknown[]>([]);
-  const [expenses, setExpenses] = useState<unknown[]>([]);
-  const [payments, setPayments] = useState<unknown[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [investments, setInvestments] = useState<any[]>([]);
+  const [assets, setAssets] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const [payments, setPayments] = useState<any[]>([]);
 
   const [selectedSection, setSelectedSection] = useState<string>("");
   const [filterMonth, setFilterMonth] = useState<string>("");
@@ -18,7 +66,6 @@ const Report: React.FC = () => {
   const apiUrl = import.meta.env.VITE_BACKEND;
   const token = localStorage.getItem("aiteg_token");
 
-  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,24 +77,12 @@ const Report: React.FC = () => {
           expensesRes,
           paymentsRes,
         ] = await Promise.all([
-          axios.get(`${apiUrl}/api/students`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/api/teachers`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/api/investment`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/api/assets`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/api/daily-expenses`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${apiUrl}/api/teacherpay/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(`${apiUrl}/api/students`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${apiUrl}/api/teachers`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${apiUrl}/api/investment`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${apiUrl}/api/assets`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${apiUrl}/api/daily-expenses`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${apiUrl}/api/teacherpay/all`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         setStudents(studentsRes.data);
@@ -60,20 +95,21 @@ const Report: React.FC = () => {
         console.log(error);
       }
     };
+
     fetchData();
   }, [apiUrl, token]);
 
-  // Filter last N months
   const filterLastMonths = (data: any[], dateKey: string) => {
     if (!filterMonth) return data;
+
     const months = Number(filterMonth);
     const now = new Date();
     const startDate = new Date();
     startDate.setMonth(now.getMonth() - months + 1);
+
     return data.filter((item) => new Date(item[dateKey]) >= startDate);
   };
 
-  // Filtered datasets
   const filteredStudents = filterLastMonths(students, "createdAt");
   const filteredTeachers = filterLastMonths(teachers, "createdAt");
   const filteredInvestments = filterLastMonths(investments, "createdAt");
@@ -81,34 +117,13 @@ const Report: React.FC = () => {
   const filteredExpenses = filterLastMonths(expenses, "createdAt");
   const filteredPayments = filterLastMonths(payments, "createdAt");
 
-  // Summary cards
   const summary = [
-    {
-      key: "students",
-      title: "Total Students",
-      value: filteredStudents.length,
-    },
-    {
-      key: "teachers",
-      title: "Total Teachers",
-      value: filteredTeachers.length,
-    },
+    { key: "students", title: "Total Students", value: filteredStudents.length },
+    { key: "teachers", title: "Total Teachers", value: filteredTeachers.length },
     { key: "assets", title: "Total Assets", value: filteredAssets.length },
-    {
-      key: "payments",
-      title: "Total Payments",
-      value: filteredPayments.length,
-    },
-    {
-      key: "expenses",
-      title: "Total Expenses",
-      value: filteredExpenses.length,
-    },
-    {
-      key: "investments",
-      title: "Total Investments",
-      value: filteredInvestments.length,
-    },
+    { key: "payments", title: "Total Payments", value: filteredPayments.length },
+    { key: "expenses", title: "Total Expenses", value: filteredExpenses.length },
+    { key: "investments", title: "Total Investments", value: filteredInvestments.length },
   ];
 
   const SummaryCard = ({ title, value, onClick }: any) => (
@@ -121,15 +136,12 @@ const Report: React.FC = () => {
     </div>
   );
 
-  // Export PDF
   const exportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text("System Report - AI-TEG-FMS", 14, 20);
 
-    const monthLabel = filterMonth
-      ? ` (Last ${filterMonth} month${Number(filterMonth) > 1 ? "s" : ""})`
-      : "";
+    const monthLabel = filterMonth ? ` (Last ${filterMonth} months)` : "";
     doc.setFontSize(14);
     doc.text(`Summary${monthLabel}`, 14, 30);
 
@@ -142,22 +154,14 @@ const Report: React.FC = () => {
       ["Total Investments", filteredInvestments.length],
     ];
 
-    autoTable(doc, {
-      startY: 35,
-      head: [["Module", "Count"]],
-      body: summaryData,
-    });
+    autoTable(doc, { startY: 35, head: [["Module", "Count"]], body: summaryData });
+
     let yPos = (doc as any).lastAutoTable.finalY + 10;
 
-    const addTable = (
-      title: string,
-      head: string[],
-      body: unknown[][],
-      totals?: unknown[]
-    ) => {
-      doc.setFontSize(14);
+    const addTable = (title: string, head: string[], body: any[], totals?: any[]) => {
       doc.text(title, 14, yPos);
       if (totals) body.push(totals);
+
       autoTable(doc, {
         startY: yPos + 5,
         head: [head],
@@ -165,178 +169,91 @@ const Report: React.FC = () => {
         styles: { fontSize: 10 },
         headStyles: { fillColor: [4, 51, 123] },
       });
+
       yPos = (doc as any).lastAutoTable.finalY + 10;
     };
 
-    // Students
-    const studentBody = filteredStudents.map((s) => [
-      s.id,
-      s.name,
-      s.father_name || "-",
-      s.Phone_number || "-",
-      s.courses?.join(", ") || "-",
-      s.fee || 0,
-      new Date(s.createdAt).toLocaleDateString(),
-    ]);
-    const totalFee = [
-      "",
-      "",
-      "",
-      "",
-      "Total Fee",
-      filteredStudents.reduce((acc, s) => acc + (s.fee || 0), 0),
-      "",
-    ];
     addTable(
       "Students",
       ["ID", "Name", "Father Name", "Phone", "Courses", "Fee", "Created At"],
-      studentBody,
-      totalFee
+      filteredStudents.map((s) => [
+        s.id,
+        s.name,
+        s.father_name,
+        s.Phone_number,
+        s.courses?.join(", "),
+        s.fee,
+        new Date(s.createdAt).toLocaleDateString(),
+      ])
     );
 
-    // Teachers
-    const teacherBody = filteredTeachers.map((t) => [
-      t.id,
-      t.name,
-      t.Phone_number || "-",
-      t.courses?.join(", ") || "-",
-      t.pay || 0,
-      t.pay_status || "-",
-      new Date(t.createdAt).toLocaleDateString(),
-    ]);
-    const totalPay = [
-      "",
-      "",
-      "",
-      "",
-      "Total Pay",
-      filteredTeachers.reduce((acc, t) => acc + Number(t.pay || 0), 0),
-      "",
-    ];
     addTable(
       "Teachers",
       ["ID", "Name", "Phone", "Courses", "Pay", "Pay Status", "Created At"],
-      teacherBody,
-      totalPay
+      filteredTeachers.map((t) => [
+        t.id,
+        t.name,
+        t.Phone_number,
+        t.courses?.join(", "),
+        t.pay,
+        t.pay_status,
+        new Date(t.createdAt).toLocaleDateString(),
+      ])
     );
 
-    // Investments
-    const investmentBody = filteredInvestments.map((i) => [
-      i.id,
-      i.Category,
-      i.Invested_by,
-      i.Quantity,
-      i.amount,
-      i.date,
-      new Date(i.createdAt).toLocaleDateString(),
-    ]);
-    const totalInvest = [
-      "",
-      "",
-      "",
-      "Total",
-      filteredInvestments.reduce((acc, i) => acc + i.amount, 0),
-      "",
-      "",
-    ];
     addTable(
       "Investments",
       ["ID", "Category", "Invested By", "Qty", "Amount", "Date", "Created At"],
-      investmentBody,
-      totalInvest
+      filteredInvestments.map((i) => [
+        i.id,
+        i.Category,
+        i.Invested_by,
+        i.Quantity,
+        i.amount,
+        i.date,
+        new Date(i.createdAt).toLocaleDateString(),
+      ])
     );
 
-    // Assets
-    const assetsBody = filteredAssets.map((a) => [
-      a.id,
-      a.name,
-      a.category,
-      a.value,
-      a.quantity,
-      a.location,
-      a.purchase_date,
-      new Date(a.createdAt).toLocaleDateString(),
-    ]);
-    const totalAssetsValue = [
-      "",
-      "",
-      "Total Value",
-      filteredAssets.reduce((acc, a) => acc + a.value, 0),
-      "",
-      "",
-      "",
-      "",
-    ];
     addTable(
       "Assets",
-      [
-        "ID",
-        "Name",
-        "Category",
-        "Value",
-        "Qty",
-        "Location",
-        "Purchase Date",
-        "Created At",
-      ],
-      assetsBody,
-      totalAssetsValue
+      ["ID", "Name", "Category", "Value", "Qty", "Location", "Purchase Date", "Created At"],
+      filteredAssets.map((a) => [
+        a.id,
+        a.name,
+        a.category,
+        a.value,
+        a.quantity,
+        a.location,
+        a.purchase_date,
+        new Date(a.createdAt).toLocaleDateString(),
+      ])
     );
 
-    // Expenses
-    const expensesBody = filteredExpenses.map((e) => [
-      e.id,
-      e.category,
-      e.amount,
-      e.description,
-      e.expense_by,
-      e.date,
-      new Date(e.createdAt).toLocaleDateString(),
-    ]);
-    const totalExpense = [
-      "",
-      "",
-      "Total Amount",
-      filteredExpenses.reduce((acc, e) => acc + e.amount, 0),
-      "",
-      "",
-      "",
-    ];
     addTable(
       "Expenses",
-      [
-        "ID",
-        "Category",
-        "Amount",
-        "Description",
-        "Expense By",
-        "Date",
-        "Created At",
-      ],
-      expensesBody,
-      totalExpense
+      ["ID", "Category", "Amount", "Description", "Expense By", "Date", "Created At"],
+      filteredExpenses.map((e) => [
+        e.id,
+        e.category,
+        e.amount,
+        e.description,
+        e.expense_by,
+        e.date,
+        new Date(e.createdAt).toLocaleDateString(),
+      ])
     );
 
-    // Payments
-    const paymentsBody = filteredPayments.map((p) => [
-      p.id,
-      p.name,
-      p.pay,
-      p.status,
-      new Date(p.createdAt).toLocaleDateString(),
-    ]);
-    const totalPayment = [
-      "",
-      "Total Paid",
-      filteredPayments.reduce((acc, p) => acc + Number(p.pay), 0),
-      "",
-      "",
-    ];
     addTable(
       "Payments",
       ["ID", "Name", "Pay", "Status", "Created At"],
-      paymentsBody,
-      totalPayment
+      filteredPayments.map((p) => [
+        p.id,
+        p.name,
+        p.pay,
+        p.status,
+        new Date(p.createdAt).toLocaleDateString(),
+      ])
     );
 
     doc.save(`AI-TEG-FMS_Report_${filterMonth || "All"}.pdf`);
@@ -345,10 +262,9 @@ const Report: React.FC = () => {
   return (
     <div className="flex bg-gray-100 min-h-screen">
       <Sidebar />
+
       <main className="flex-1 p-6">
-        <h2 className="text-3xl font-bold text-[#04337B] mb-6">
-          System Reports
-        </h2>
+        <h2 className="text-3xl font-bold text-[#04337B] mb-6">System Reports</h2>
 
         <div className="flex gap-4 items-center mb-6">
           <select
@@ -361,30 +277,24 @@ const Report: React.FC = () => {
             <option value="2">Last 2 Months</option>
             <option value="3">Last 3 Months</option>
           </select>
+
           <button
-            className="bg-[#03C0C8] text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
             onClick={exportPDF}
+            className="bg-[#03C0C8] text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
           >
             Export PDF
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          {summary.map((item, i) => (
-            <SummaryCard
-              key={i}
-              title={item.title}
-              value={item.value}
-              onClick={() => setSelectedSection(item.key)}
-            />
+          {summary.map((s, i) => (
+            <SummaryCard key={i} title={s.title} value={s.value} onClick={() => setSelectedSection(s.key)} />
           ))}
         </div>
 
         {selectedSection && (
           <DetailTable
-            title={
-              selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)
-            }
+            title={selectedSection.toUpperCase()}
             data={
               selectedSection === "students"
                 ? filteredStudents
@@ -400,56 +310,15 @@ const Report: React.FC = () => {
             }
             columns={
               selectedSection === "students"
-                ? [
-                    "ID",
-                    "Name",
-                    "Father Name",
-                    "Phone",
-                    "Courses",
-                    "Fee",
-                    "Created At",
-                  ]
+                ? ["ID", "Name", "Father Name", "Phone", "Courses", "Fee", "Created At"]
                 : selectedSection === "teachers"
-                ? [
-                    "ID",
-                    "Name",
-                    "Phone",
-                    "Courses",
-                    "Pay",
-                    "Pay Status",
-                    "Created At",
-                  ]
+                ? ["ID", "Name", "Phone", "Courses", "Pay", "Pay Status", "Created At"]
                 : selectedSection === "investments"
-                ? [
-                    "ID",
-                    "Category",
-                    "Invested By",
-                    "Qty",
-                    "Amount",
-                    "Date",
-                    "Created At",
-                  ]
+                ? ["ID", "Category", "Invested By", "Qty", "Amount", "Date", "Created At"]
                 : selectedSection === "assets"
-                ? [
-                    "ID",
-                    "Name",
-                    "Category",
-                    "Value",
-                    "Qty",
-                    "Location",
-                    "Purchase Date",
-                    "Created At",
-                  ]
+                ? ["ID", "Name", "Category", "Value", "Qty", "Location", "Purchase Date", "Created At"]
                 : selectedSection === "expenses"
-                ? [
-                    "ID",
-                    "Category",
-                    "Amount",
-                    "Description",
-                    "Expense By",
-                    "Date",
-                    "Created At",
-                  ]
+                ? ["ID", "Category", "Amount", "Description", "Expense By", "Date", "Created At"]
                 : ["ID", "Name", "Pay", "Status", "Created At"]
             }
             mapper={(item: any) =>
@@ -457,20 +326,20 @@ const Report: React.FC = () => {
                 ? [
                     item.id,
                     item.name,
-                    item.father_name || "-",
-                    item.Phone_number || "-",
-                    item.courses?.join(", ") || "-",
-                    item.fee || "-",
+                    item.father_name,
+                    item.Phone_number,
+                    item.courses?.join(", "),
+                    item.fee,
                     new Date(item.createdAt).toLocaleDateString(),
                   ]
                 : selectedSection === "teachers"
                 ? [
                     item.id,
                     item.name,
-                    item.Phone_number || "-",
-                    item.courses?.join(", ") || "-",
+                    item.Phone_number,
+                    item.courses?.join(", "),
                     item.pay,
-                    item.pay_status || "-",
+                    item.pay_status,
                     new Date(item.createdAt).toLocaleDateString(),
                   ]
                 : selectedSection === "investments"
@@ -520,32 +389,3 @@ const Report: React.FC = () => {
 };
 
 export default Report;
-
-// DetailTable component
-const DetailTable = ({ title, data, columns, mapper }: any) => (
-  <div className="bg-white p-4 rounded-lg shadow mt-6 overflow-x-auto">
-    <h3 className="text-xl font-bold mb-4">{title} Details</h3>
-    <table className="w-full border">
-      <thead className="bg-gray-200">
-        <tr>
-          {columns.map((col: string, idx: number) => (
-            <th className="p-2 border" key={idx}>
-              {col}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item: any) => (
-          <tr key={item.id}>
-            {mapper(item).map((v: any, idx: number) => (
-              <td className="p-2 border" key={idx}>
-                {v}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-);
