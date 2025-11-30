@@ -153,7 +153,6 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-
       <main className="flex-1 p-6 overflow-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl font-bold text-[#04337B] ">Welcome to AI Teg Financial Management System</h2>

@@ -112,44 +112,64 @@ const Courses: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <input
-              className="border rounded-lg px-4 py-2 shadow-sm"
-              placeholder="Course Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
+  {/* Course Name */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Course Name
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      value={form.name}
+      onChange={(e) => setForm({ ...form, name: e.target.value })}
+    />
+  </div>
 
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 shadow-sm"
-              placeholder="Fee"
-              value={form.fee}
-              onChange={(e) => setForm({ ...form, fee: +e.target.value })}
-            />
+  {/* Fee */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Fee
+    </label>
+    <input
+      type="number"
+      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      value={form.fee}
+      onChange={(e) => setForm({ ...form, fee: +e.target.value })}
+    />
+  </div>
 
-            <input
-              className="border rounded-lg px-4 py-2 shadow-sm"
-              placeholder="Duration"
-              value={form.duration}
-              onChange={(e) => setForm({ ...form, duration: e.target.value })}
-            />
+  {/* Duration */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Duration
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      value={form.duration}
+      onChange={(e) => setForm({ ...form, duration: e.target.value })}
+    />
+  </div>
 
-            <input
-              className="border rounded-lg px-4 py-2 shadow-sm col-span-full"
-              placeholder="Description"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-            />
+  {/* Description */}
+  <div className="col-span-full">
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Description
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      value={form.description}
+      onChange={(e) => setForm({ ...form, description: e.target.value })}
+    />
+  </div>
 
-            <button
-              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
-              onClick={handleAddOrUpdate}
-            >
-              {isEditing ? "Update Course" : "Add Course"}
-            </button>
-          </div>
+  {/* Submit Button */}
+  <button
+    className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
+    onClick={handleAddOrUpdate}
+  >
+    {isEditing ? "Update Course" : "Add Course"}
+  </button>
+</div>
+
         </div>
 
         {/* FILTER BAR */}

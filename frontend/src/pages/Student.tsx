@@ -217,110 +217,165 @@ const Students: React.FC = () => {
         </h2>
 
         {/* ========= ADD / UPDATE FORM ========= */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-[#04337B] mb-4">
-            {isEditing ? "Update Student" : "Add Student"}
-          </h3>
+       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+  <h3 className="text-xl font-semibold text-[#04337B] mb-4">
+    {isEditing ? "Update Student" : "Add Student"}
+  </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <input
-              className="border rounded-lg px-4 py-2"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2"
-              placeholder="Father Name"
-              value={form.father_name}
-              onChange={(e) =>
-                setForm({ ...form, father_name: e.target.value })
-              }
-            />
-            <input
-              className="border rounded-lg px-4 py-2"
-              placeholder="Phone"
-              value={form.Phone_number}
-              onChange={(e) =>
-                setForm({ ...form, Phone_number: e.target.value })
-              }
-            />
-            <input
-              className="border rounded-lg px-4 py-2"
-              placeholder="Address"
-              value={form.Address}
-              onChange={(e) => setForm({ ...form, Address: e.target.value })}
-            />
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            {/* Courses */}
-            <div className="border rounded-lg px-4 py-2">
-              <div className="flex flex-wrap gap-1">
-                {form.course.map((c) => (
-                  <span
-                    key={c}
-                    className="bg-[#03C0C8] text-white px-2 py-1 rounded-full"
-                  >
-                    {c}
-                    <button
-                      onClick={() => handleCourseRemove(c)}
-                      className="ml-1 font-bold"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
+    {/* Name */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Name
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Name"
+        value={form.name}
+        onChange={(e) => setForm({ ...form, name: e.target.value })}
+      />
+    </div>
 
-              <select
-                className="mt-2 w-full border-none outline-none"
-                value=""
-                onChange={(e) => handleCourseSelect(e.target.value)}
-              >
-                <option value="">Select course</option>
-                {courses
-                  .filter((c) => !form.course.includes(c.name))
-                  .map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name} ({c.fee})
-                    </option>
-                  ))}
-              </select>
-            </div>
+    {/* Father Name */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Father Name
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Father Name"
+        value={form.father_name}
+        onChange={(e) =>
+          setForm({ ...form, father_name: e.target.value })
+        }
+      />
+    </div>
 
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2"
-              placeholder="Fees"
-              value={form.fee}
-              readOnly
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2"
-              placeholder="Discount %"
-              value={form.Discount}
-              onChange={(e) => {
-                const discount = parseFloat(e.target.value) || 0;
-                const fee_after_discount = form.fee - (form.fee * discount) / 100;
-                setForm({ ...form, Discount: discount, fee_after_discount });
-              }}
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2"
-              placeholder="Fee After Discount"
-              value={form.fee_after_discount}
-              readOnly
-            />
+    {/* Phone */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Phone
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Phone"
+        value={form.Phone_number}
+        onChange={(e) =>
+          setForm({ ...form, Phone_number: e.target.value })
+        }
+      />
+    </div>
 
-            <button
-              className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
-              onClick={handleAddOrUpdate}
+    {/* Address */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Address
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Address"
+        value={form.Address}
+        onChange={(e) => setForm({ ...form, Address: e.target.value })}
+      />
+    </div>
+
+    {/* Courses */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Courses
+      </label>
+      <div className="border rounded-lg px-4 py-2">
+        <div className="flex flex-wrap gap-1">
+          {form.course.map((c) => (
+            <span
+              key={c}
+              className="bg-[#03C0C8] text-white px-2 py-1 rounded-full"
             >
-              {isEditing ? "Update" : "Add"}
-            </button>
-          </div>
+              {c}
+              <button
+                onClick={() => handleCourseRemove(c)}
+                className="ml-1 font-bold"
+              >
+                ×
+              </button>
+            </span>
+          ))}
         </div>
+
+        <select
+          className="mt-2 w-full border-none outline-none"
+          value=""
+          onChange={(e) => handleCourseSelect(e.target.value)}
+        >
+          <option value="">Select course</option>
+          {courses
+            .filter((c) => !form.course.includes(c.name))
+            .map((c) => (
+              <option key={c.id} value={c.name}>
+                {c.name} ({c.fee})
+              </option>
+            ))}
+        </select>
+      </div>
+    </div>
+
+    {/* Fees */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Fees
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Fees"
+        value={form.fee}
+        readOnly
+      />
+    </div>
+
+    {/* Discount */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Discount (%)
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Discount %"
+        value={form.Discount}
+        onChange={(e) => {
+          const discount = parseFloat(e.target.value) || 0;
+          const fee_after_discount = form.fee - (form.fee * discount) / 100;
+          setForm({ ...form, Discount: discount, fee_after_discount });
+        }}
+      />
+    </div>
+
+    {/* Fee After Discount */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Fee After Discount
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full"
+        placeholder="Fee After Discount"
+        value={form.fee_after_discount}
+        readOnly
+      />
+    </div>
+
+    {/* Submit Button */}
+    <button
+      className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
+      onClick={handleAddOrUpdate}
+    >
+      {isEditing ? "Update" : "Add"}
+    </button>
+  </div>
+</div>
+
 
         {/* ========= FILTER BAR ========= */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center justify-around mb-6">

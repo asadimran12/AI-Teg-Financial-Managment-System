@@ -11,6 +11,7 @@ import Teachers_pay from "./pages/Teachers_pay";
 import Login from "./pages/Login";
 import { setAxiosAuthHeaderFromStorage } from "./services/auth";
 import { protectedLoader } from "./services/authRoute";
+import {Sale} from "./pages/Sale";
 
 const App = () => {
   setAxiosAuthHeaderFromStorage();
@@ -24,6 +25,7 @@ const App = () => {
     {
       path: "/report",
       element: <Report />,
+      loader: protectedLoader,
     },
 
     // Protected Routes
@@ -65,6 +67,12 @@ const App = () => {
     {
       path: "/teacherspay",
       element: <Teachers_pay />,
+      loader: protectedLoader,
+    },
+
+       {
+      path: "/sale",
+      element: <Sale />,
       loader: protectedLoader,
     },
   ]);

@@ -128,70 +128,104 @@ const Teachers: React.FC = () => {
           <h3 className="text-xl font-semibold text-[#04337B] mb-4">
             {editingId ? "Update Teacher" : "Add New Teacher"}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Name"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Phone"
-              value={form.Phone_number}
-              onChange={(e) =>
-                setForm({ ...form, Phone_number: e.target.value })
-              }
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Pay"
-              value={form.pay}
-              onChange={(e) => setForm({ ...form, pay: +e.target.value })}
-            />
 
-            {/* Courses Multi-select */}
-            <div className="border rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#03C0C8] shadow-sm">
-              <div className="flex flex-wrap gap-1 mb-2">
-                {form.courses.map((c) => (
-                  <span
-                    key={c}
-                    className="bg-[#03C0C8] text-white px-2 py-1 rounded-full flex items-center gap-1"
-                  >
-                    {c}
-                    <button
-                      type="button"
-                      onClick={() => handleCourseRemove(c)}
-                      className="text-white font-bold"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <select
-                className="w-full border-none focus:ring-0 outline-none"
-                value=""
-                onChange={(e) => handleCourseSelect(e.target.value)}
-              >
-                <option value="">Select course</option>
-                {courses
-                  .filter((c) => !form.courses.includes(c.name))
-                  .map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-              </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Name
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
 
+            {/* Phone */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Phone
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+                placeholder="Phone"
+                value={form.Phone_number}
+                onChange={(e) =>
+                  setForm({ ...form, Phone_number: e.target.value })
+                }
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Email
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+                placeholder="Email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+
+            {/* Pay */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Pay
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+                placeholder="Pay"
+                value={form.pay}
+                onChange={(e) => setForm({ ...form, pay: +e.target.value })}
+              />
+            </div>
+
+            {/* Courses Multi-select */}
+            <div className="col-span-full">
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Courses
+              </label>
+              <div className="border rounded-lg px-4 py-2 focus-within:ring-2 focus-within:ring-[#03C0C8] shadow-sm">
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {form.courses.map((c) => (
+                    <span
+                      key={c}
+                      className="bg-[#03C0C8] text-white px-2 py-1 rounded-full flex items-center gap-1"
+                    >
+                      {c}
+                      <button
+                        type="button"
+                        onClick={() => handleCourseRemove(c)}
+                        className="text-white font-bold"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <select
+                  className="w-full border-none focus:ring-0 outline-none"
+                  value=""
+                  onChange={(e) => handleCourseSelect(e.target.value)}
+                >
+                  <option value="">Select course</option>
+                  {courses
+                    .filter((c) => !form.courses.includes(c.name))
+                    .map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Submit Button */}
             <button
               className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
               onClick={handleSubmit}

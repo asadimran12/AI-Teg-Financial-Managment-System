@@ -115,59 +115,80 @@ const Teachers: React.FC = () => {
         </h2>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold mb-4">
-            {editingId ? "Update Teacher Pay" : "Add Teacher Pay"}
-          </h3>
+       <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+  <h3 className="text-xl font-semibold mb-4">
+    {editingId ? "Update Teacher Pay" : "Add Teacher Pay"}
+  </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select
-              className="border rounded-lg px-4 py-2"
-              value={form.name}
-              onChange={(e) => {
-                const selectedTeacher = teachers.find(
-                  (t) => t.name === e.target.value
-                );
-                setForm({
-                  ...form,
-                  name: e.target.value,
-                  pay: selectedTeacher?.pay || 0,
-                });
-              }}
-            >
-              <option value="">Select Teacher</option>
-              {teachers.map((t) => (
-                <option key={t.id} value={t.name}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 shadow-sm"
-              placeholder="Pay"
-              value={form.pay}
-              readOnly
-            />
+    {/* Teacher Selection */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Teacher
+      </label>
+      <select
+        className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+        value={form.name}
+        onChange={(e) => {
+          const selectedTeacher = teachers.find(
+            (t) => t.name === e.target.value
+          );
+          setForm({
+            ...form,
+            name: e.target.value,
+            pay: selectedTeacher?.pay || 0,
+          });
+        }}
+      >
+        <option value="">Select Teacher</option>
+        {teachers.map((t) => (
+          <option key={t.id} value={t.name}>
+            {t.name}
+          </option>
+        ))}
+      </select>
+    </div>
 
-            <select
-              className="border rounded-lg px-4 py-2"
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-            >
-              <option value="paid">Paid</option>
-              <option value="unpaid">Unpaid</option>
-            </select>
+    {/* Pay */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Pay
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+        placeholder="Pay"
+        value={form.pay}
+        readOnly
+      />
+    </div>
 
-            <button
-              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg mt-2 md:col-span-3"
-              onClick={handleSubmit}
-            >
-              {editingId ? "Update Record" : "Add Record"}
-            </button>
-          </div>
-        </div>
+    {/* Status */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Status
+      </label>
+      <select
+        className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
+        value={form.status}
+        onChange={(e) => setForm({ ...form, status: e.target.value })}
+      >
+        <option value="paid">Paid</option>
+        <option value="unpaid">Unpaid</option>
+      </select>
+    </div>
+
+    {/* Submit Button */}
+    <button
+      className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg mt-2 md:col-span-3"
+      onClick={handleSubmit}
+    >
+      {editingId ? "Update Record" : "Add Record"}
+    </button>
+  </div>
+</div>
+
 
         {/* Filter Bar */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center gap-4 mb-6">

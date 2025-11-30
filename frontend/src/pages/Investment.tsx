@@ -124,50 +124,88 @@ const exportPDF = () => {
 
         {/* Add / Edit Form */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <h3 className="text-xl font-semibold text-[#04337B] mb-4">
-            {editingId ? "Update Investment" : "Add New Investment"}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Invested By"
-              value={form.Invested_by}
-              onChange={e => setForm({ ...form, Invested_by: e.target.value })}
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Amount"
-              value={form.amount}
-              onChange={e => setForm({ ...form, amount: +e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Category"
-              value={form.Category}
-              onChange={e => setForm({ ...form, Category: e.target.value })}
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Quantity"
-              value={form.Quantity}
-              onChange={e => setForm({ ...form, Quantity: +e.target.value })}
-            />
-            <input
-              type="date"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              value={form.date}
-              onChange={e => setForm({ ...form, date: e.target.value })}
-            />
-            <button
-              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-              onClick={handleSubmit}
-            >
-              {editingId ? "Update Investment" : "Add Investment"}
-            </button>
-          </div>
-        </div>
+  <h3 className="text-xl font-semibold text-[#04337B] mb-4">
+    {editingId ? "Update Investment" : "Add New Investment"}
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {/* Invested By */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Invested By
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+        placeholder="Invested By"
+        value={form.Invested_by}
+        onChange={(e) => setForm({ ...form, Invested_by: e.target.value })}
+      />
+    </div>
+
+    {/* Amount */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Amount
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+        placeholder="Amount"
+        value={form.amount}
+        onChange={(e) => setForm({ ...form, amount: +e.target.value })}
+      />
+    </div>
+
+    {/* Category */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Category
+      </label>
+      <input
+        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+        placeholder="Category"
+        value={form.Category}
+        onChange={(e) => setForm({ ...form, Category: e.target.value })}
+      />
+    </div>
+
+    {/* Quantity */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Quantity
+      </label>
+      <input
+        type="number"
+        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+        placeholder="Quantity"
+        value={form.Quantity}
+        onChange={(e) => setForm({ ...form, Quantity: +e.target.value })}
+      />
+    </div>
+
+    {/* Date */}
+    <div>
+      <label className="block text-sm font-semibold text-gray-600 mb-1">
+        Date
+      </label>
+      <input
+        type="date"
+        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+        value={form.date}
+        onChange={(e) => setForm({ ...form, date: e.target.value })}
+      />
+    </div>
+
+    {/* Submit Button */}
+    <button
+      className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+      onClick={handleSubmit}
+    >
+      {editingId ? "Update Investment" : "Add Investment"}
+    </button>
+  </div>
+</div>
+
 
         {/* Filters & Export */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center gap-4 mb-6">

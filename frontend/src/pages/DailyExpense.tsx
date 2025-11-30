@@ -111,45 +111,82 @@ export const DailyExpenses: React.FC = () => {
           <h3 className="text-xl font-semibold text-[#04337B] mb-4">
             {editingId ? "Update Expense" : "Add New Expense"}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Expense By"
-              value={form.expense_by}
-              onChange={e => setForm({ ...form, expense_by: e.target.value })}
-            />
-            <input
-              type="number"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Amount"
-              value={form.amount}
-              onChange={e => setForm({ ...form, amount: +e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Category"
-              value={form.category}
-              onChange={e => setForm({ ...form, category: e.target.value })}
-            />
-            <input
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              placeholder="Description"
-              value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
-            />
-            <input
-              type="date"
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm"
-              value={form.date}
-              onChange={e => setForm({ ...form, date: e.target.value })}
-            />
-            <button
-              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-              onClick={handleSubmit}
-            >
-              {editingId ? "Update Expense" : "Add Expense"}
-            </button>
-          </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {/* Expense By */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Expense By
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      placeholder="Expense By"
+      value={form.expense_by}
+      onChange={(e) => setForm({ ...form, expense_by: e.target.value })}
+    />
+  </div>
+
+  {/* Amount */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Amount
+    </label>
+    <input
+      type="number"
+      className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      placeholder="Amount"
+      value={form.amount}
+      onChange={(e) => setForm({ ...form, amount: +e.target.value })}
+    />
+  </div>
+
+  {/* Category */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Category
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      placeholder="Category"
+      value={form.category}
+      onChange={(e) => setForm({ ...form, category: e.target.value })}
+    />
+  </div>
+
+  {/* Description */}
+  <div className="col-span-full">
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Description
+    </label>
+    <input
+      className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      placeholder="Description"
+      value={form.description}
+      onChange={(e) => setForm({ ...form, description: e.target.value })}
+    />
+  </div>
+
+  {/* Date */}
+  <div>
+    <label className="block text-sm font-semibold text-gray-600 mb-1">
+      Date
+    </label>
+    <input
+      type="date"
+      className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+      value={form.date}
+      onChange={(e) => setForm({ ...form, date: e.target.value })}
+    />
+  </div>
+
+  {/* Submit Button */}
+  <button
+    className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+    onClick={handleSubmit}
+  >
+    {editingId ? "Update Expense" : "Add Expense"}
+  </button>
+</div>
+
         </div>
 
         {/* Filter & Export */}
