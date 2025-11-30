@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Bar, Pie } from "react-chartjs-2";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
@@ -155,8 +155,15 @@ const Dashboard: React.FC = () => {
       <Sidebar />
       <main className="flex-1 p-6 overflow-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-[#04337B] ">Welcome to AI Teg Financial Management System</h2>
-          <button onClick={() => navigate('/report')} className="bg-[#03C0C8] text-white p-2 rounded hover:opacity-90">View Full Report</button>
+          <h2 className="text-3xl font-bold text-[#04337B] ">
+            Welcome to AI Teg Financial Management System
+          </h2>
+          <button
+            onClick={() => navigate("/report")}
+            className="bg-[#03C0C8] text-white p-2 rounded hover:opacity-90"
+          >
+            View Full Report
+          </button>
         </div>
 
         {/* Module Cards */}
