@@ -54,13 +54,9 @@ export const Assets: React.FC = () => {
 
     try {
       if (editingId) {
-        const res = await axios.put(
-          `${apiUrl}/api/assets/${editingId}`,
-          form,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await axios.put(`${apiUrl}/api/assets/${editingId}`, form, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAssets(assets.map((a) => (a.id === editingId ? res.data : a)));
         setEditingId(null);
       } else {
@@ -136,10 +132,12 @@ export const Assets: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      <div className="h-full overflow-y-auto">
+        <Sidebar />
+      </div>
 
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-6 h-full overflow-y-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">
           Assets Dashboard
         </h2>
@@ -149,91 +147,94 @@ export const Assets: React.FC = () => {
           <h3 className="text-xl font-semibold text-[#04337B] mb-4">
             {editingId ? "Update Asset" : "Add New Asset"}
           </h3>
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-  {/* Name */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Name
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.name}
-      onChange={(e) => setForm({ ...form, name: e.target.value })}
-    />
-  </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Name
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
 
-  {/* Category */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Category
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.category}
-      onChange={(e) => setForm({ ...form, category: e.target.value })}
-    />
-  </div>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Category
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              />
+            </div>
 
-  {/* Purchase Date */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Purchase Date
-    </label>
-    <input
-      type="date"
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.purchase_date}
-      onChange={(e) => setForm({ ...form, purchase_date: e.target.value })}
-    />
-  </div>
+            {/* Purchase Date */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Purchase Date
+              </label>
+              <input
+                type="date"
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.purchase_date}
+                onChange={(e) =>
+                  setForm({ ...form, purchase_date: e.target.value })
+                }
+              />
+            </div>
 
-  {/* Value */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Value
-    </label>
-    <input
-      type="number"
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.value}
-      onChange={(e) => setForm({ ...form, value: +e.target.value })}
-    />
-  </div>
+            {/* Value */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Value
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.value}
+                onChange={(e) => setForm({ ...form, value: +e.target.value })}
+              />
+            </div>
 
-  {/* Quantity */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Quantity
-    </label>
-    <input
-      type="number"
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.quantity}
-      onChange={(e) => setForm({ ...form, quantity: +e.target.value })}
-    />
-  </div>
+            {/* Quantity */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Quantity
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.quantity}
+                onChange={(e) =>
+                  setForm({ ...form, quantity: +e.target.value })
+                }
+              />
+            </div>
 
-  {/* Location */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Location
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
-      value={form.location}
-      onChange={(e) => setForm({ ...form, location: e.target.value })}
-    />
-  </div>
+            {/* Location */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Location
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#03C0C8] shadow-sm w-full"
+                value={form.location}
+                onChange={(e) => setForm({ ...form, location: e.target.value })}
+              />
+            </div>
 
-  {/* Submit Button */}
-  <button
-    className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-    onClick={handleSubmit}
-  >
-    {editingId ? "Update Asset" : "Add Asset"}
-  </button>
-</div>
-
+            {/* Submit Button */}
+            <button
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+              onClick={handleSubmit}
+            >
+              {editingId ? "Update Asset" : "Add Asset"}
+            </button>
+          </div>
         </div>
 
         {/* Filter & Export */}

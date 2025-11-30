@@ -4,7 +4,6 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-
 interface Investment {
   id: number;
   Invested_by: string;
@@ -51,14 +50,25 @@ export const Investment: React.FC = () => {
 
     try {
       if (editingId) {
-        const res = await axios.put(`${apiUrl}/api/investment/${editingId}`, form);
-        setInvestments(investments.map(i => (i.id === editingId ? res.data : i)));
+        const res = await axios.put(
+          `${apiUrl}/api/investment/${editingId}`,
+          form
+        );
+        setInvestments(
+          investments.map((i) => (i.id === editingId ? res.data : i))
+        );
         setEditingId(null);
       } else {
         const res = await axios.post(`${apiUrl}/api/investment`, form);
         setInvestments([...investments, res.data]);
       }
-      setForm({ Invested_by: "", amount: 0, Category: "", date: "", Quantity: 0 });
+      setForm({
+        Invested_by: "",
+        amount: 0,
+        Category: "",
+        date: "",
+        Quantity: 0,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -67,7 +77,7 @@ export const Investment: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await axios.delete(`${apiUrl}/api/investment/${id}`);
-      setInvestments(investments.filter(i => i.id !== id));
+      setInvestments(investments.filter((i) => i.id !== id));
     } catch (err) {
       console.error(err);
     }
@@ -85,127 +95,135 @@ export const Investment: React.FC = () => {
   };
 
   // Filtered investments
-  const filteredInvestments = investments.filter(i => {
+  const filteredInvestments = investments.filter((i) => {
     const investorMatch =
-      filterByInvestor === "" || i.Invested_by.toLowerCase() === filterByInvestor.toLowerCase();
+      filterByInvestor === "" ||
+      i.Invested_by.toLowerCase() === filterByInvestor.toLowerCase();
     const categoryMatch =
-      filterByCategory === "" || i.Category.toLowerCase() === filterByCategory.toLowerCase();
-    const monthMatch =
-      filterByMonth === "" || i.date.startsWith(filterByMonth);
+      filterByCategory === "" ||
+      i.Category.toLowerCase() === filterByCategory.toLowerCase();
+    const monthMatch = filterByMonth === "" || i.date.startsWith(filterByMonth);
     return investorMatch && categoryMatch && monthMatch;
   });
 
-const exportPDF = () => {
-  const doc = new jsPDF();
+  const exportPDF = () => {
+    const doc = new jsPDF();
 
-  doc.text("Investment Report", 14, 15);
+    doc.text("Investment Report", 14, 15);
 
-  // Correct usage of autoTable
-  autoTable(doc, {
-    startY: 20,
-    head: [["Investor", "Amount", "Category", "Quantity", "Date"]],
-    body: investments.map(i => [
-      i.Invested_by,
-      i.amount,
-      i.Category,
-      i.Quantity,
-      i.date,
-    ]),
-  });
+    // Correct usage of autoTable
+    autoTable(doc, {
+      startY: 20,
+      head: [["Investor", "Amount", "Category", "Quantity", "Date"]],
+      body: investments.map((i) => [
+        i.Invested_by,
+        i.amount,
+        i.Category,
+        i.Quantity,
+        i.date,
+      ]),
+    });
 
-  doc.save("Investment_Report.pdf");
-};
+    doc.save("Investment_Report.pdf");
+  };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-      <main className="flex-1 p-6 overflow-auto">
-        <h2 className="text-3xl font-bold text-[#04337B] mb-6">Investment Dashboard</h2>
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      <div className="h-full overflow-y-auto">
+       <Sidebar />
+    </div>
+      <main className="flex-1 p-6 h-full overflow-y-auto">
+        <h2 className="text-3xl font-bold text-[#04337B] mb-6">
+          Investment Dashboard
+        </h2>
 
         {/* Add / Edit Form */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-  <h3 className="text-xl font-semibold text-[#04337B] mb-4">
-    {editingId ? "Update Investment" : "Add New Investment"}
-  </h3>
+          <h3 className="text-xl font-semibold text-[#04337B] mb-4">
+            {editingId ? "Update Investment" : "Add New Investment"}
+          </h3>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {/* Invested By */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Invested By
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-        placeholder="Invested By"
-        value={form.Invested_by}
-        onChange={(e) => setForm({ ...form, Invested_by: e.target.value })}
-      />
-    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Invested By */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Invested By
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                placeholder="Invested By"
+                value={form.Invested_by}
+                onChange={(e) =>
+                  setForm({ ...form, Invested_by: e.target.value })
+                }
+              />
+            </div>
 
-    {/* Amount */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Amount
-      </label>
-      <input
-        type="number"
-        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-        placeholder="Amount"
-        value={form.amount}
-        onChange={(e) => setForm({ ...form, amount: +e.target.value })}
-      />
-    </div>
+            {/* Amount */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Amount
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                placeholder="Amount"
+                value={form.amount}
+                onChange={(e) => setForm({ ...form, amount: +e.target.value })}
+              />
+            </div>
 
-    {/* Category */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Category
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-        placeholder="Category"
-        value={form.Category}
-        onChange={(e) => setForm({ ...form, Category: e.target.value })}
-      />
-    </div>
+            {/* Category */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Category
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                placeholder="Category"
+                value={form.Category}
+                onChange={(e) => setForm({ ...form, Category: e.target.value })}
+              />
+            </div>
 
-    {/* Quantity */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Quantity
-      </label>
-      <input
-        type="number"
-        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-        placeholder="Quantity"
-        value={form.Quantity}
-        onChange={(e) => setForm({ ...form, Quantity: +e.target.value })}
-      />
-    </div>
+            {/* Quantity */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Quantity
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                placeholder="Quantity"
+                value={form.Quantity}
+                onChange={(e) =>
+                  setForm({ ...form, Quantity: +e.target.value })
+                }
+              />
+            </div>
 
-    {/* Date */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Date
-      </label>
-      <input
-        type="date"
-        className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-        value={form.date}
-        onChange={(e) => setForm({ ...form, date: e.target.value })}
-      />
-    </div>
+            {/* Date */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                className="border rounded-lg px-4 py-2 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                value={form.date}
+                onChange={(e) => setForm({ ...form, date: e.target.value })}
+              />
+            </div>
 
-    {/* Submit Button */}
-    <button
-      className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
-      onClick={handleSubmit}
-    >
-      {editingId ? "Update Investment" : "Add Investment"}
-    </button>
-  </div>
-</div>
-
+            {/* Submit Button */}
+            <button
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] transition shadow col-span-full"
+              onClick={handleSubmit}
+            >
+              {editingId ? "Update Investment" : "Add Investment"}
+            </button>
+          </div>
+        </div>
 
         {/* Filters & Export */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center gap-4 mb-6">
@@ -214,20 +232,20 @@ const exportPDF = () => {
             className="border rounded-lg px-3 py-2 w-40"
             placeholder="Filter by Investor"
             value={filterByInvestor}
-            onChange={e => setFilterByInvestor(e.target.value)}
+            onChange={(e) => setFilterByInvestor(e.target.value)}
           />
           <input
             type="text"
             className="border rounded-lg px-3 py-2 w-40"
             placeholder="Filter by Category"
             value={filterByCategory}
-            onChange={e => setFilterByCategory(e.target.value)}
+            onChange={(e) => setFilterByCategory(e.target.value)}
           />
           <input
             type="month"
             className="border rounded-lg px-3 py-2 w-40"
             value={filterByMonth}
-            onChange={e => setFilterByMonth(e.target.value)}
+            onChange={(e) => setFilterByMonth(e.target.value)}
           />
           <button
             className="bg-[#03C0C8] text-white px-4 py-2 rounded-lg hover:bg-[#04337B]"
@@ -263,21 +281,42 @@ const exportPDF = () => {
             <tbody className="divide-y divide-gray-100">
               {filteredInvestments.length > 0 ? (
                 filteredInvestments.map((i, idx) => (
-                  <tr key={i.id} className={idx % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 transition" : "hover:bg-gray-100 transition"}>
-                    <td className="py-3 px-6 font-medium text-[#04337B]">{i.Invested_by}</td>
+                  <tr
+                    key={i.id}
+                    className={
+                      idx % 2 === 0
+                        ? "bg-gray-50 hover:bg-gray-100 transition"
+                        : "hover:bg-gray-100 transition"
+                    }
+                  >
+                    <td className="py-3 px-6 font-medium text-[#04337B]">
+                      {i.Invested_by}
+                    </td>
                     <td className="py-3 px-6">Rs.{i.amount}</td>
                     <td className="py-3 px-6">{i.Category}</td>
                     <td className="py-3 px-6">{i.Quantity}</td>
                     <td className="py-3 px-6">{i.date}</td>
                     <td className="py-3 px-6 flex gap-2">
-                      <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" onClick={() => handleEdit(i)}>Edit</button>
-                      <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" onClick={() => handleDelete(i.id)}>Delete</button>
+                      <button
+                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                        onClick={() => handleEdit(i)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        onClick={() => handleDelete(i.id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center py-4 text-gray-500">No investments found.</td>
+                  <td colSpan={6} className="text-center py-4 text-gray-500">
+                    No investments found.
+                  </td>
                 </tr>
               )}
             </tbody>

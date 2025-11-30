@@ -97,10 +97,12 @@ const Courses: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      <div className="h-full overflow-y-auto">
+        <Sidebar />
+      </div>
 
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-6  h-full overflow-y-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">
           Courses Dashboard
         </h2>
@@ -112,64 +114,65 @@ const Courses: React.FC = () => {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-  {/* Course Name */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Course Name
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-      value={form.name}
-      onChange={(e) => setForm({ ...form, name: e.target.value })}
-    />
-  </div>
+            {/* Course Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Course Name
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
 
-  {/* Fee */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Fee
-    </label>
-    <input
-      type="number"
-      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-      value={form.fee}
-      onChange={(e) => setForm({ ...form, fee: +e.target.value })}
-    />
-  </div>
+            {/* Fee */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Fee
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                value={form.fee}
+                onChange={(e) => setForm({ ...form, fee: +e.target.value })}
+              />
+            </div>
 
-  {/* Duration */}
-  <div>
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Duration
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-      value={form.duration}
-      onChange={(e) => setForm({ ...form, duration: e.target.value })}
-    />
-  </div>
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Duration
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                value={form.duration}
+                onChange={(e) => setForm({ ...form, duration: e.target.value })}
+              />
+            </div>
 
-  {/* Description */}
-  <div className="col-span-full">
-    <label className="block text-sm font-semibold text-gray-600 mb-1">
-      Description
-    </label>
-    <input
-      className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
-      value={form.description}
-      onChange={(e) => setForm({ ...form, description: e.target.value })}
-    />
-  </div>
+            {/* Description */}
+            <div className="col-span-full">
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Description
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#03C0C8]"
+                value={form.description}
+                onChange={(e) =>
+                  setForm({ ...form, description: e.target.value })
+                }
+              />
+            </div>
 
-  {/* Submit Button */}
-  <button
-    className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
-    onClick={handleAddOrUpdate}
-  >
-    {isEditing ? "Update Course" : "Add Course"}
-  </button>
-</div>
-
+            {/* Submit Button */}
+            <button
+              className="bg-[#03C0C8] cursor-pointer text-white font-semibold px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
+              onClick={handleAddOrUpdate}
+            >
+              {isEditing ? "Update Course" : "Add Course"}
+            </button>
+          </div>
         </div>
 
         {/* FILTER BAR */}

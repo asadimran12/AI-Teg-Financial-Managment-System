@@ -101,9 +101,11 @@ export const DailyExpenses: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-      <main className="flex-1 p-6 overflow-auto">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+  <div className="h-full overflow-y-auto">
+       <Sidebar />
+    </div>
+      <main className="flex-1 p-6 h-full overflow-y-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">Daily Expenses</h2>
 
         {/* Add / Edit Form */}

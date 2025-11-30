@@ -130,71 +130,116 @@ const Students: React.FC = () => {
   };
 
   // Generate PDF Challan
-   const generateChallan = (student: Student) => {
+  const generateChallan = (student: Student) => {
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    // Header
-    doc.setFontSize(20);
-    doc.text("AI-TEG-FMS", 105, 20, { align: "center" });
-    doc.setFontSize(12);
-    doc.text("Fee Challan / Receipt", 105, 30, { align: "center" });
-    doc.setLineWidth(0.5);
-    doc.line(14, 35, 196, 35);
+    // ===== HEADER SECTION =====
+    doc.setDrawColor(0);
+    doc.setLineWidth(1);
+    doc.rect(10, 10, pageWidth - 20, 270); // full border
 
-    // Student Info
+    doc.setFontSize(22);
+    doc.setTextColor(20, 60, 140);
+    doc.text("AI-TEG-FMS Institute", pageWidth / 2, 25, { align: "center" });
+
     doc.setFontSize(12);
-    doc.text(`Name: ${student.name}`, 14, 45);
-    doc.text(`Father Name: ${student.father_name}`, 14, 55);
-    doc.text(`Phone: ${student.Phone_number}`, 14, 65);
-    doc.text(`Address: ${student.Address}`, 14, 75);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 45);
+    doc.setTextColor(80, 80, 80);
+    doc.text("Empowering Future Through Technology", pageWidth / 2, 32, {
+      align: "center",
+    });
+
+    // Receipt Info
+    doc.setFontSize(11);
+    doc.text(
+      `Challan No: ${Math.floor(Math.random() * 90000) + 10000}`,
+      20,
+      45
+    );
+    doc.text(
+      `Issue Date: ${new Date().toLocaleDateString()}`,
+      pageWidth - 60,
+      45
+    );
+
+    doc.line(10, 50, pageWidth - 10, 50);
+
+    // ===== STUDENT DETAILS =====
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Student Information", 15, 60);
+
+    doc.setFontSize(11);
+    doc.text(`Name: ${student.name}`, 15, 70);
+    doc.text(`Father Name: ${student.father_name}`, 15, 80);
+    doc.text(`Phone: ${student.Phone_number}`, 15, 90);
+    doc.text(`Address: ${student.Address}`, 15, 100);
+
+    doc.line(10, 110, pageWidth - 10, 110);
+
+    // ===== COURSE TABLE =====
+    doc.setFontSize(14);
+    doc.text("Course Fee Details", 15, 120);
 
     // Table Header
-    const startY = 85;
     doc.setFillColor(3, 192, 200);
     doc.setTextColor(255, 255, 255);
-    doc.rect(14, startY, 182, 10, "F");
-    doc.text("Course", 20, startY + 7);
-    doc.text("Fee", 150, startY + 7);
+    doc.rect(15, 130, pageWidth - 30, 10, "F");
+    doc.text("Course Name", 20, 137);
+    doc.text("Fee", pageWidth - 50, 137);
 
     // Table Rows
+    let rowY = 145;
     doc.setTextColor(0, 0, 0);
-    let rowY = startY + 15;
+
     student.course.forEach((cName) => {
       const course = courses.find((c) => c.name === cName);
       if (course) {
         doc.text(course.name, 20, rowY);
-        doc.text(course.fee.toString(), 150, rowY);
+        doc.text(`${course.fee}`, pageWidth - 50, rowY);
         rowY += 10;
       }
     });
 
-    // Total Fee
-    doc.setLineWidth(0.5);
-    doc.line(14, rowY, 196, rowY);
-    doc.text(
-      `Total Fee: ${student.fee}`,
-      20,
-      rowY + 10
-    );
-    doc.text(
-      `Discount: ${student.Discount ?? 0}%`,
-      20,
-      rowY + 20
-    );
-    doc.text(
-      `Fee After Discount: ${student.fee_after_discount ?? student.fee}`,
-      20,
-      rowY + 30
-    );
+    doc.line(15, rowY, pageWidth - 15, rowY);
+    rowY += 10;
 
-    // Footer / Signatures
-    const footerY = rowY + 50;
-    doc.text("_____________________", 30, footerY);
-    doc.text("Admin / Treasurer", 25, footerY + 7);
+    // ===== PAYMENT SUMMARY =====
+    doc.setFontSize(14);
+    doc.text("Payment Summary", 15, rowY);
+    rowY += 10;
 
-    doc.text("_____________________", 150, footerY);
-    doc.text("Student Signature", 145, footerY + 7);
+    doc.setFontSize(11);
+    doc.text(`Total Fee: Rs ${student.fee}`, 20, rowY);
+    rowY += 10;
+
+    doc.text(`Discount: ${student.Discount ?? 0}%`, 20, rowY);
+    rowY += 10;
+
+    const finalFee = student.fee_after_discount ?? student.fee;
+    doc.text(`Final Payable Amount: Rs ${finalFee}`, 20, rowY);
+
+    rowY += 20;
+    doc.line(10, rowY, pageWidth - 10, rowY);
+    rowY += 20;
+
+    // ===== SIGNATURE AREA =====
+    doc.setFontSize(12);
+    doc.text("_________________________", 25, rowY + 10);
+    doc.text("Student Signature", 35, rowY + 18);
+
+    doc.text("_________________________", pageWidth - 80, rowY + 10);
+    doc.text("Admin Signature", pageWidth - 67, rowY + 18);
+
+    // ===== FOOTER =====
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text(
+      "This is a system-generated financial document. No manual edits are allowed.",
+      pageWidth / 2,
+      285,
+      { align: "center" }
+    );
 
     doc.save(`${student.name}_challan.pdf`);
   };
@@ -208,174 +253,174 @@ const Students: React.FC = () => {
   });
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-
-      <main className="flex-1 p-6 overflow-auto">
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      <div className=" h-full overflow-y-auto">
+        <Sidebar />
+      </div>
+      <main className="flex-1 h-full p-6 overflow-y-auto ">
         <h2 className="text-3xl font-bold text-[#04337B] mb-4">
           Students Dashboard
         </h2>
 
         {/* ========= ADD / UPDATE FORM ========= */}
-       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-  <h3 className="text-xl font-semibold text-[#04337B] mb-4">
-    {isEditing ? "Update Student" : "Add Student"}
-  </h3>
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h3 className="text-xl font-semibold text-[#04337B] mb-4">
+            {isEditing ? "Update Student" : "Add Student"}
+          </h3>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Name
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
 
-    {/* Name */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Name
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Name"
-        value={form.name}
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-      />
-    </div>
+            {/* Father Name */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Father Name
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Father Name"
+                value={form.father_name}
+                onChange={(e) =>
+                  setForm({ ...form, father_name: e.target.value })
+                }
+              />
+            </div>
 
-    {/* Father Name */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Father Name
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Father Name"
-        value={form.father_name}
-        onChange={(e) =>
-          setForm({ ...form, father_name: e.target.value })
-        }
-      />
-    </div>
+            {/* Phone */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Phone
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Phone"
+                value={form.Phone_number}
+                onChange={(e) =>
+                  setForm({ ...form, Phone_number: e.target.value })
+                }
+              />
+            </div>
 
-    {/* Phone */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Phone
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Phone"
-        value={form.Phone_number}
-        onChange={(e) =>
-          setForm({ ...form, Phone_number: e.target.value })
-        }
-      />
-    </div>
+            {/* Address */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Address
+              </label>
+              <input
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Address"
+                value={form.Address}
+                onChange={(e) => setForm({ ...form, Address: e.target.value })}
+              />
+            </div>
 
-    {/* Address */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Address
-      </label>
-      <input
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Address"
-        value={form.Address}
-        onChange={(e) => setForm({ ...form, Address: e.target.value })}
-      />
-    </div>
+            {/* Courses */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Courses
+              </label>
+              <div className="border rounded-lg px-4 py-2">
+                <div className="flex flex-wrap gap-1">
+                  {form.course.map((c) => (
+                    <span
+                      key={c}
+                      className="bg-[#03C0C8] text-white px-2 py-1 rounded-full"
+                    >
+                      {c}
+                      <button
+                        onClick={() => handleCourseRemove(c)}
+                        className="ml-1 font-bold"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
 
-    {/* Courses */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Courses
-      </label>
-      <div className="border rounded-lg px-4 py-2">
-        <div className="flex flex-wrap gap-1">
-          {form.course.map((c) => (
-            <span
-              key={c}
-              className="bg-[#03C0C8] text-white px-2 py-1 rounded-full"
+                <select
+                  className="mt-2 w-full border-none outline-none"
+                  value=""
+                  onChange={(e) => handleCourseSelect(e.target.value)}
+                >
+                  <option value="">Select course</option>
+                  {courses
+                    .filter((c) => !form.course.includes(c.name))
+                    .map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name} ({c.fee})
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Fees */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Fees
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Fees"
+                value={form.fee}
+                readOnly
+              />
+            </div>
+
+            {/* Discount */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Discount (%)
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Discount %"
+                value={form.Discount}
+                onChange={(e) => {
+                  const discount = parseFloat(e.target.value) || 0;
+                  const fee_after_discount =
+                    form.fee - (form.fee * discount) / 100;
+                  setForm({ ...form, Discount: discount, fee_after_discount });
+                }}
+              />
+            </div>
+
+            {/* Fee After Discount */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-600 mb-1">
+                Fee After Discount
+              </label>
+              <input
+                type="number"
+                className="border rounded-lg px-4 py-2 w-full"
+                placeholder="Fee After Discount"
+                value={form.fee_after_discount}
+                readOnly
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
+              onClick={handleAddOrUpdate}
             >
-              {c}
-              <button
-                onClick={() => handleCourseRemove(c)}
-                className="ml-1 font-bold"
-              >
-                ×
-              </button>
-            </span>
-          ))}
+              {isEditing ? "Update" : "Add"}
+            </button>
+          </div>
         </div>
-
-        <select
-          className="mt-2 w-full border-none outline-none"
-          value=""
-          onChange={(e) => handleCourseSelect(e.target.value)}
-        >
-          <option value="">Select course</option>
-          {courses
-            .filter((c) => !form.course.includes(c.name))
-            .map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name} ({c.fee})
-              </option>
-            ))}
-        </select>
-      </div>
-    </div>
-
-    {/* Fees */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Fees
-      </label>
-      <input
-        type="number"
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Fees"
-        value={form.fee}
-        readOnly
-      />
-    </div>
-
-    {/* Discount */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Discount (%)
-      </label>
-      <input
-        type="number"
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Discount %"
-        value={form.Discount}
-        onChange={(e) => {
-          const discount = parseFloat(e.target.value) || 0;
-          const fee_after_discount = form.fee - (form.fee * discount) / 100;
-          setForm({ ...form, Discount: discount, fee_after_discount });
-        }}
-      />
-    </div>
-
-    {/* Fee After Discount */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-600 mb-1">
-        Fee After Discount
-      </label>
-      <input
-        type="number"
-        className="border rounded-lg px-4 py-2 w-full"
-        placeholder="Fee After Discount"
-        value={form.fee_after_discount}
-        readOnly
-      />
-    </div>
-
-    {/* Submit Button */}
-    <button
-      className="bg-[#03C0C8] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#04337B] col-span-full"
-      onClick={handleAddOrUpdate}
-    >
-      {isEditing ? "Update" : "Add"}
-    </button>
-  </div>
-</div>
-
 
         {/* ========= FILTER BAR ========= */}
         <div className="bg-white p-3 rounded-xl shadow-md flex flex-wrap items-center justify-around mb-6">

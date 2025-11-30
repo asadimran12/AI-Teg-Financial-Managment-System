@@ -158,9 +158,11 @@ export const Sale: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      <Sidebar />
-      <main className="flex-1 p-4 md:p-6">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      <div className="h-full overflow-y-auto">
+        <Sidebar />
+      </div>
+      <main className="flex-1 p-4 md:p-6 h-full overflow-y-auto">
         <h1 className="text-2xl md:text-3xl font-bold text-[#04337B] mb-6">
           Sales Management
         </h1>
@@ -173,7 +175,9 @@ export const Sale: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/** Item */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Item</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Item
+              </label>
               <input
                 type="text"
                 placeholder="Enter Item"
@@ -185,31 +189,41 @@ export const Sale: React.FC = () => {
 
             {/** Customer */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Customer</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Customer
+              </label>
               <input
                 type="text"
                 placeholder="Customer Name"
                 value={form.customer_name}
                 className="border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-[#03C0C8]"
-                onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, customer_name: e.target.value })
+                }
               />
             </div>
 
             {/** Quantity */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Quantity</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Quantity
+              </label>
               <input
                 type="number"
                 placeholder="Quantity"
                 value={form.quantity}
                 className="border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-[#03C0C8]"
-                onChange={(e) => setForm({ ...form, quantity: +e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, quantity: +e.target.value })
+                }
               />
             </div>
 
             {/** Price */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Price</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Price
+              </label>
               <input
                 type="number"
                 placeholder="Price"
@@ -221,7 +235,9 @@ export const Sale: React.FC = () => {
 
             {/** Discount */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Discount (%)</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Discount (%)
+              </label>
               <input
                 type="number"
                 placeholder="Discount"
@@ -229,15 +245,22 @@ export const Sale: React.FC = () => {
                 className="border rounded-lg px-3 py-2 w-full shadow-sm focus:ring-2 focus:ring-[#03C0C8]"
                 onChange={(e) => {
                   const newDiscount = +e.target.value;
-                  const priceafterdiscount = form.price - (form.price * newDiscount) / 100;
-                  setForm({ ...form, discount: newDiscount, priceafterdiscount });
+                  const priceafterdiscount =
+                    form.price - (form.price * newDiscount) / 100;
+                  setForm({
+                    ...form,
+                    discount: newDiscount,
+                    priceafterdiscount,
+                  });
                 }}
               />
             </div>
 
             {/** Price After Discount */}
             <div>
-              <label className="text-sm font-semibold text-gray-600">Price After Discount</label>
+              <label className="text-sm font-semibold text-gray-600">
+                Price After Discount
+              </label>
               <input
                 type="number"
                 placeholder="Final Price"
@@ -307,7 +330,9 @@ export const Sale: React.FC = () => {
                 <th className="py-3 px-3 sm:px-6 text-left">Quantity</th>
                 <th className="py-3 px-3 sm:px-6 text-left">Price</th>
                 <th className="py-3 px-3 sm:px-6 text-left">Discount</th>
-                <th className="py-3 px-3 sm:px-6 text-left">Price After Discount</th>
+                <th className="py-3 px-3 sm:px-6 text-left">
+                  Price After Discount
+                </th>
                 <th className="py-3 px-3 sm:px-6 text-left">Date</th>
                 <th className="py-3 px-3 sm:px-6 text-left">Actions</th>
               </tr>
@@ -326,8 +351,12 @@ export const Sale: React.FC = () => {
                     <td className="py-2 px-2 sm:px-6">{sale.quantity}</td>
                     <td className="py-2 px-2 sm:px-6">Rs {sale.price}</td>
                     <td className="py-2 px-2 sm:px-6">{sale.discount}%</td>
-                    <td className="py-2 px-2 sm:px-6">Rs {sale.priceafterdiscount}</td>
-                    <td className="py-2 px-2 sm:px-6">{sale.updatedAt?.split("T")[0]}</td>
+                    <td className="py-2 px-2 sm:px-6">
+                      Rs {sale.priceafterdiscount}
+                    </td>
+                    <td className="py-2 px-2 sm:px-6">
+                      {sale.updatedAt?.split("T")[0]}
+                    </td>
                     <td className="py-2 px-2 sm:px-6 flex gap-2 flex-wrap">
                       <button
                         className="bg-green-500 text-white px-2 py-1 rounded-lg hover:bg-green-600 text-sm"

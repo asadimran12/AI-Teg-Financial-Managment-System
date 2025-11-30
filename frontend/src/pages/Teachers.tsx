@@ -115,10 +115,12 @@ const Teachers: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
+   <div className="flex h-screen bg-gray-100 overflow-hidden">
+      <div className="shrink-0 h-full overflow-y-auto">
+  <Sidebar />
+</div>
 
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 h-full p-6 overflow-y-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">
           Teachers Dashboard
         </h2>
