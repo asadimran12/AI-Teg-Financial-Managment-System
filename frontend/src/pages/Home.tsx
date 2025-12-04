@@ -15,6 +15,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { getToken } from "../services/auth";
 
 ChartJS.register(
   CategoryScale,
@@ -72,6 +73,7 @@ interface TeacherPay {
 
 const Dashboard: React.FC = () => {
   const apiUrl = import.meta.env.VITE_BACKEND;
+  const token=getToken();
 
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -105,8 +107,15 @@ const Dashboard: React.FC = () => {
         console.error(err);
       }
     };
-    fetchData();
-  }, [apiUrl]);
+
+    if (token)
+    {
+      fetchData();
+    }
+    else {
+      navigate("/");
+    }
+  }, [apiUrl, token, navigate]);
 
   // Analytics calculations
   const investmentByCategory = investments.reduce<Record<string, number>>(
