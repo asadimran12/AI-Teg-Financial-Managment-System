@@ -12,7 +12,6 @@ import Login from "./pages/Login";
 import { setAxiosAuthHeaderFromStorage } from "./services/auth";
 import { protectedLoader } from "./services/authRoute";
 import { Sale } from "./pages/Sale";
-import ForgetPassword from "./pages/SendPin";
 import SendPin from "./pages/SendPin";
 import NewPassword from "./pages/NewPassword";
 
