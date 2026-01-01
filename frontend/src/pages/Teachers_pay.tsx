@@ -106,18 +106,18 @@ const Teachers: React.FC = () => {
   });
 
   return (
-<div className="flex h-screen overflow-hidden bg-gray-100">
+    <div className="flex h-screen overflow-hidden bg-gray-100">
       <div className="h-full overflow-y-auto">
-       <Sidebar />
-    </div>
+        <Sidebar />
+      </div>
 
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 overflow-y-auto">
         <h2 className="text-3xl font-bold text-[#04337B] mb-6">
           Teachers Payment Dashboard
         </h2>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 h-full overflow-y-auto">
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 overflow-y-auto">
           <h3 className="text-xl font-semibold mb-4">
             {editingId ? "Update Teacher Pay" : "Add Teacher Pay"}
           </h3>

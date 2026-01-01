@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setToken, getToken } from "../services/auth";
 
 const Login: React.FC = () => {
@@ -39,7 +39,7 @@ const Login: React.FC = () => {
       if (axios.isAxiosError(err)) {
         setError(
           err.response?.data?.message ||
-            "Login failed — please check your credentials"
+          "Login failed — please check your credentials"
         );
       } else {
         setError("Login failed — please check your credentials");
@@ -80,6 +80,9 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+          </div>
+          <div>
+            <Link className="text-sm text-[#04337B] cursor-pointer hover:underline" to="/sendPin">Forget Password</Link>
           </div>
           <button
             type="submit"

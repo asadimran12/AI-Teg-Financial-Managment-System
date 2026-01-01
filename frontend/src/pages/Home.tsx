@@ -73,7 +73,7 @@ interface TeacherPay {
 
 const Dashboard: React.FC = () => {
   const apiUrl = import.meta.env.VITE_BACKEND;
-  const token=getToken();
+  const token = getToken();
 
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -108,11 +108,9 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    if (token)
-    {
+    if (token) {
       fetchData();
-    }
-    else {
+    } else {
       navigate("/");
     }
   }, [apiUrl, token, navigate]);
