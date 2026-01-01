@@ -12,10 +12,8 @@ const SendPin = () => {
         setLoading(true);
         setMessage("");
 
-        const apiUrl = import.meta.env.VITE_BACKEND;
-
         try {
-            const res = await fetch(`${apiUrl}/api/users/sendpin`, {
+            const res = await fetch(`http://localhost:5000/api/users/sendpin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
